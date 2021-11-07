@@ -1,7 +1,7 @@
 import { FC, ReactElement } from "react";
 import classes from "./pick.module.scss";
 import Image from "next/image";
-import LoLIcon from "../../../public/images/lol-icon.png";
+import LoLIcon from "../../public/images/lol-icon.png";
 
 export interface PickProps {}
 
