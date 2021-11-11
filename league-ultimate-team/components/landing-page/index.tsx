@@ -10,6 +10,8 @@ import FakerCard from "../../public/images/playerCards/faker.png";
 import { FC, ReactElement, useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import fs from "fs";
+import PlayerCard from "../player-card";
+import { IPlayerData, Roles } from "../../constants/player.interfaces";
 
 export interface LandingPageProps {
   playerImages: string[];
@@ -18,6 +20,22 @@ export interface LandingPageProps {
 const LandingPage: FC<LandingPageProps> = ({ playerImages }): ReactElement => {
   const router = useRouter();
   const [offset, setOffset] = useState<number>(0);
+
+  const tempPlayer: IPlayerData = {
+    player: "Alphari",
+    nationality: "Wales",
+    region: "LCS",
+
+    import: true,
+    team: "Team Liquid",
+    position: Roles.TOP,
+    lan: 100,
+    vis: 65,
+    car: 90,
+    exp: 96,
+    ver: 77,
+    thr: 100,
+  };
 
   useEffect(() => {
     const background = document.querySelector(
@@ -88,7 +106,7 @@ const LandingPage: FC<LandingPageProps> = ({ playerImages }): ReactElement => {
           );
         })}
       </div>
-
+      <PlayerCard player={tempPlayer} />
       <div className={classes.buttonsContainer}>
         <button onClick={() => router.push("/help")} className={classes.button}>
           <div className={classes.helpButton}>
