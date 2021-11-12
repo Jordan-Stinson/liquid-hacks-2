@@ -102,19 +102,19 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     async function callbackFunction() {
       const players: IPlayerData[] = [];
       postData("/api/player", { role: "TOP" }).then((data) => {
-        players.push(data);
+        players[0] = data;
       });
       postData("/api/player", { role: "JG" }).then((data) => {
-        players.push(data);
+        players[1] = data;
       });
       postData("/api/player", { role: "MID" }).then((data) => {
-        players.push(data);
+        players[2] = data;
       });
       postData("/api/player", { role: "ADC" }).then((data) => {
-        players.push(data);
+        players[3] = data;
       });
       postData("/api/player", { role: "SUP" }).then((data) => {
-        players.push(data);
+        players[4] = data;
       });
       setEnemyPlayers(players);
     }
@@ -138,8 +138,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             );
             setTimeout(() => {
               setRoleSelect(roleSelect + 1);
-            }, 6500);
-          }, 6000);
+            }, 3000);
+          }, 3000);
         }, 6000);
       }, 5500);
     }, 1000);
@@ -186,7 +186,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       setTimeout(() => {
         customMask1(0);
         setTimeout(() => {
-          addToTopText(`The A.I. has chosen the following team.`);
+          addToTopText(`The A.I.is currently choosing their team.`);
           setTimeout(() => {
             createEnemyTeam();
             setTimeout(() => {
@@ -196,7 +196,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
                 setGameStage(1);
               }, 6500);
             }, 6000);
-          }, 6000);
+          }, 1000);
         }, 4000);
       }, 8000);
     }, 0);
@@ -514,6 +514,29 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     if your team is doing it, choice of whether to go destroy the enemy's turrets or look for fights (can trigger any xvx fight)
     */
   };
+
+  useEffect(() => {
+    const newEnemyPlayers = [];
+    for (let i = 0; i < enemyPlayers.length; i++) {
+      switch (enemyPlayers[i].Position) {
+        case "TOP":
+          newEnemyPlayers[0] = enemyPlayers[i];
+          break;
+        case "JG":
+          newEnemyPlayers[1] = enemyPlayers[i];
+          break;
+        case "MID":
+          newEnemyPlayers[2] = enemyPlayers[i];
+          break;
+        case "ADC":
+          newEnemyPlayers[3] = enemyPlayers[i];
+          break;
+        case "SUP":
+          newEnemyPlayers[4] = enemyPlayers[i];
+          break;
+      }
+    }
+  }, [enemyPlayers]);
 
   const handleBackdoor = (): void => {
     setEventNumber(10);
@@ -1412,7 +1435,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             <div className={classes.mask} data-mask>
               <div className={classes.topText} data-top-text></div>
 
-              <div className={classes.roleSelect}>{roleSelector()}</div>
+              {roleSelect != 6 && (
+                <div className={classes.roleSelect}>{roleSelector()}</div>
+              )}
 
               {showButtons && (
                 <div className={classes.buttonOptions}>
