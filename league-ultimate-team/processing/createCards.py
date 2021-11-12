@@ -1,11 +1,15 @@
 import pandas as pd
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+import os
+import time
+from dotenv import load_dotenv 
+from pathlib import Path 
+
 
 def createCards(df, driver, start=0, end=165):
-
-    print(df)
 
     # Webpage elements
     cardListButton = driver.find_element(By.ID, 'card_selector_btn')
@@ -72,12 +76,16 @@ def createCards(df, driver, start=0, end=165):
 
 if __name__ == "__main__":
     # Initialization
-    serv = Service(r'C:\Users\Nolan\Desktop\Miscellaneous\Setup\chromedriver_win32\chromedriver.exe')
+    dotenv_path = Path('../.env.local') 
+    load_dotenv(dotenv_path=dotenv_path)
+    # serv = Service(os.getenv('CHROMEDRIVER_PATH'))
     opt = webdriver.ChromeOptions()
     opt.add_experimental_option('excludeSwitches', ['enable-logging'])
-    driver = webdriver.Chrome(service=serv, options=opt)
+    # driver = webdriver.Chrome(service=serv, options=opt)
+    driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=opt)
     link = 'https://www.fifarosters.com/create-card'
-    cardStats = pd.read_csv(r'C:\Users\Nolan\Desktop\Liquid Hacks Workspace\Main Dataset.csv')
+    datasetPath = os.path.join(os.path.dirname(__file__), '../data/mainDataset.csv')
+    cardStats = pd.read_csv(datasetPath)
 
     # Set up website
     driver.get(link)
@@ -99,5 +107,6 @@ if __name__ == "__main__":
         textBox.send_keys(statTitles[i])
 
     # Create cards
-    createCards(cardStats, driver, 0, 5)
+    createCards(cardStats, driver, 0, 2)
+    time.sleep(3)
     driver.quit()

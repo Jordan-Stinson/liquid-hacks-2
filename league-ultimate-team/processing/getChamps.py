@@ -1,5 +1,6 @@
 import pandas as pd
 import csv
+import os
 
 def getChampionPositions(region):
     top, jg, mid, adc, sup = [], [], [], [], []
@@ -49,14 +50,15 @@ if __name__ == "__main__":
     positions = ['TOP', 'JG', 'MID', 'ADC', 'SUP']
     champDict = {}
     for league in leagues:
-        path = 'C:\\Users\\Nolan\\Desktop\\Liquid Hacks Workspace\\Champion Data\\' + league + 'Champs.csv'
+        path = os.path.join(os.path.dirname(__file__), '..\\data\\' + league + 'Champs.csv')
         champions = pd.read_csv(path)
         table = getChampionPositions(champions)
         for i in range(len(positions)):
             champDict[league + positions[i]] = table[i]
     
     # Get threat
-    threatDataset = pd.read_csv(r'C:\Users\Nolan\Desktop\Liquid Hacks Workspace\threatDataset.csv')
+    datasetPath = os.path.join(os.path.dirname(__file__), '..\\data\\threatDataset.csv')
+    threatDataset = pd.read_csv(datasetPath)
     threatScores = getThreat(threatDataset, champDict)
     printDict(threatScores)
 
