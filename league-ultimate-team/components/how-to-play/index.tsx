@@ -2,10 +2,12 @@ import { FC, ReactElement } from "react";
 import classes from "./pick.module.scss";
 import Image from "next/image";
 import LoLIcon from "../../public/images/lol-icon.png";
+import { useRouter } from "next/router";
 
 export interface HowToPlayProps {}
 
 const PickComponent: FC<HowToPlayProps> = ({}): ReactElement => {
+  const router = useRouter();
   return (
     <div className={classes.wrapper}>
       <div className={classes.title}>
@@ -22,6 +24,24 @@ const PickComponent: FC<HowToPlayProps> = ({}): ReactElement => {
       <div className={classes.paragraph}>
         You will then need to make your team. For each role, you will be
         presented with
+      </div>
+
+      <div className={classes.buttons}>
+        <div className={classes.backButton}>
+          <button onClick={() => router.push("/")}>
+            <div className={classes.buttonBorder}>
+              <span>Back to Home Page</span>
+            </div>
+          </button>
+        </div>
+
+        <div className={classes.playButton}>
+          <button onClick={() => router.push("/play")}>
+            <div className={classes.buttonBorder}>
+              <span>Play Now</span>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -2,7 +2,6 @@ import { FC, ReactElement } from "react";
 import {
   IPlayerData,
   RatingBreakpoints,
-  Roles,
 } from "../../constants/player.interfaces";
 import {
   SilverBackground,
@@ -86,7 +85,7 @@ const PlayerCard: FC<PlayerCardProps> = ({ player }): ReactElement => {
 
   const rightBanner = (
     rating: number,
-    position: Roles,
+    position: string,
     nationality: string,
     team: string
   ) => {

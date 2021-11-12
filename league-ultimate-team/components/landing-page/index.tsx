@@ -11,7 +11,7 @@ import { FC, ReactElement, useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import fs from "fs";
 import PlayerCard from "../player-card";
-import { IPlayerData, Roles } from "../../constants/player.interfaces";
+import { IPlayerData } from "../../constants/player.interfaces";
 
 export interface LandingPageProps {
   playerImages: string[];
@@ -28,7 +28,7 @@ const LandingPage: FC<LandingPageProps> = ({ playerImages }): ReactElement => {
 
     import: true,
     team: "Team Liquid",
-    position: Roles.TOP,
+    position: "TOP",
     lan: 100,
     vis: 65,
     car: 90,
@@ -113,7 +113,7 @@ const LandingPage: FC<LandingPageProps> = ({ playerImages }): ReactElement => {
             <span>How to play</span>
           </div>
         </button>
-        <button onClick={() => router.push("/pick")} className={classes.button}>
+        <button onClick={() => router.push("/play")} className={classes.button}>
           <div className={classes.playButton}>
             <span>Play now</span>
           </div>
