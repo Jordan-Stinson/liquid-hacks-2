@@ -1,7 +1,7 @@
 const mainDataset = require("../../public/data/mainDataset.json"); // Requiring a JSON file reads and parses it. Good for static files that don't change.
 
 function getFiveRandomPlayers(sizeOfArr) {
-    visited = new Set();
+    let visited = new Set();
     for (let i=0; i < 5; i++) {
         let idx = Math.floor(Math.random() * sizeOfArr);
         while (visited.has(idx)) {
