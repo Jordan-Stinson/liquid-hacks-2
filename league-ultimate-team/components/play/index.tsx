@@ -186,7 +186,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       setTimeout(() => {
         customMask1(0);
         setTimeout(() => {
-          addToTopText(`The A.I.is currently choosing their team.`);
+          addToTopText(`The A.I. is currently choosing their team.`);
           setTimeout(() => {
             createEnemyTeam();
             setTimeout(() => {
@@ -203,6 +203,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handle1v1 = (stage: number): void => {
+    console.log("in 1v1");
     setEventNumber(1);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
     const roleTo1v1 = Math.floor(Math.random() * 5);
@@ -251,6 +252,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handle2v2 = (stage: number): void => {
+    console.log("in 2v2");
+
     setEventNumber(2);
     const rolesTo2v2 = [
       Math.floor(Math.random() * 2),
@@ -262,10 +265,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       [enemyPlayers[rolesTo2v2[0]], enemyPlayers[rolesTo2v2[1]]],
     ];
     setEventPlayers([
-      [players[0][0]],
-      [players[0][1]],
-      [players[1][1]],
-      [players[1][1]],
+      [players[0][0], players[0][1]],
+      [players[1][1], players[1][1]],
     ]);
 
     const isEnemyEngage = [Math.floor(Math.random() * 2)];
@@ -274,8 +275,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         setTimeout(() => {
           setShowButtons(["Back Off", "Engage"]);
           addToTopText(
-            `${players[0][0].Player} and ${players[0][1].Player} 
-            on your team are teaming up to clear vision when they run into 
+            `${players[0][0].Player} and ${
+              players[0][1].Player
+            } on your team are teaming up to clear vision when they run into 
             ${players[1][0].Player} and ${players[1][1].Player}. 
             Both ${players[0][0].Player} and ${players[1][0].Player} 
             are level ${Math.floor(Math.random() * 3 + stage * 2 + 1)}, 
@@ -337,16 +339,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       enemyPlayers[4],
     ];
     setEventPlayers([
-      [players[0]],
-      [players[1]],
-      [players[2]],
-      [players[3]],
-      [players[4]],
-      [players[5]],
-      [players[6]],
-      [players[7]],
-      [players[8]],
-      [players[9]],
+      [players[0], players[1], players[2], players[3], players[4]],
+      [players[5], players[6], players[7], players[8], players[9]],
     ]);
 
     if (isEnemyEvent) {
@@ -656,16 +650,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       enemyPlayers[4],
     ];
     setEventPlayers([
-      [players[0]],
-      [players[1]],
-      [players[2]],
-      [players[3]],
-      [players[4]],
-      [players[5]],
-      [players[6]],
-      [players[7]],
-      [players[8]],
-      [players[9]],
+      [players[0], players[1], players[2], players[3], players[4]],
+      [players[5], players[6], players[7], players[8], players[9]],
     ]);
     if (isEnemyElder) {
       const startEvent = (): void => {
@@ -778,16 +764,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       enemyPlayers[4],
     ];
     setEventPlayers([
-      [players[0]],
-      [players[1]],
-      [players[2]],
-      [players[3]],
-      [players[4]],
-      [players[5]],
-      [players[6]],
-      [players[7]],
-      [players[8]],
-      [players[9]],
+      [players[0], players[1], players[2], players[3], players[4]],
+      [players[5], players[6], players[7], players[8], players[9]],
     ]);
 
     if (isEnemyBaron) {
@@ -857,6 +835,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     }
     if (stage == 3) {
       while (events.length) {
+        console.log(events[0], event);
         if (events[0] == 1) {
           events.pop();
           handle2v2(stage);
@@ -1012,74 +991,41 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   useEffect(() => {
+    console.log(gameStage, "starting gmae stage");
     if (gameStage == 1) {
       const numOfEvents = Math.floor(Math.random() * (3 - 0) + 0);
-      const eventArray = [];
-      for (let i = 0; i < r1po.length; i++) {
-        let odd = r1po[i] * 100;
-        for (let j = 0; j < odd; j++) {
-          eventArray.push(i + 1);
-        }
-      }
       let events = [];
       while (events.length != numOfEvents) {
-        events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
+        events.push(Math.floor(Math.random() * r1po.length + 1));
       }
-      handleEvents(1, events);
+      if (events.length) handleEvents(1, events);
+      else setGameStage(gameStage + 1);
     } else if (gameStage == 2) {
       const numOfEvents = Math.floor(Math.random() * (3 - 1) + 1);
-      const eventArray = [];
-      for (let i = 0; i < r2po.length; i++) {
-        let odd = r2po[i] * 100;
-        for (let j = 0; j < odd; j++) {
-          eventArray.push(i + 1);
-        }
-      }
       let events = [];
       while (events.length != numOfEvents) {
-        events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
+        events.push(Math.floor(Math.random() * r2po.length + 1));
       }
       handleEvents(2, events);
     } else if (gameStage == 3) {
       const numOfEvents = Math.floor(Math.random() * (4 - 1) + 1);
-      const eventArray = [];
-      for (let i = 0; i < r3po.length; i++) {
-        let odd = r3po[i] * 100;
-        for (let j = 0; j < odd; j++) {
-          eventArray.push(i + 1);
-        }
-      }
       let events = [];
       while (events.length != numOfEvents) {
-        events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
+        events.push(Math.floor(Math.random() * r3po.length + 1));
       }
       handleEvents(3, events);
     } else if (gameStage == 4) {
       const numOfEvents = Math.floor(Math.random() * (4 - 2) + 2);
-      const eventArray = [];
-      for (let i = 0; i < r4po.length; i++) {
-        let odd = r4po[i] * 100;
-        for (let j = 0; j < odd; j++) {
-          eventArray.push(i + 1);
-        }
-      }
       let events = [];
       while (events.length != numOfEvents) {
-        events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
+        events.push(Math.floor(Math.random() * r4po.length + 1));
       }
       handleEvents(4, events);
     } else if (gameStage == 5) {
       const numOfEvents = 3;
-      const eventArray = [];
-      for (let i = 0; i < r5po.length; i++) {
-        let odd = r5po[i] * 100;
-        for (let j = 0; j < odd; j++) {
-          eventArray.push(i + 1);
-        }
-      }
       let events = [];
       while (events.length != numOfEvents) {
-        events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
+        events.push(Math.floor(Math.random() * r5po.length + 1));
       }
       handleEvents(5, events);
     }
@@ -1090,7 +1036,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
     async function callbackFunction() {
       postData("/api/fivePlayers", { role: role }).then((data) => {
-        // console.log(data, "resdata");
         if (players.length != 5) setPlayers(data);
       });
     }
@@ -1187,6 +1132,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handleEventEnd = (playerWon: boolean) => {
+    console.log(eventPlayers);
     if (playerWon) {
       switch (eventNumber) {
         case 1:
@@ -1346,7 +1292,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   useEffect(() => {
     if (gameChoice == -1) return;
-    if (gameChoice == 5) midRisk();
+    if (gameChoice == 5) {
+      setGameStage(gameStage + 1);
+      midRisk();
+    }
     if (gameChoice == 0) {
       if (
         (eventNumber > -1 && eventNumber < 3) ||
@@ -1354,6 +1303,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         eventNumber == 6 ||
         eventNumber == 10
       ) {
+        setGameStage(gameStage + 1);
+
         return;
       } else if (
         eventNumber == 3 ||
@@ -1362,6 +1313,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         eventNumber == 9 ||
         eventNumber == 11
       ) {
+        setGameStage(gameStage + 1);
+
         smallRisk();
       }
     }
@@ -1374,8 +1327,12 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         eventNumber == 7 ||
         eventNumber == 8
       ) {
+        setGameStage(gameStage + 1);
+
         midRisk();
       } else {
+        setGameStage(gameStage + 1);
+
         bigRisk();
       }
     }
@@ -1620,7 +1577,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       startGame((text) => console.log(text));
     }
   }, [roleSelect]);
-  console.log(teamPlayers, enemyPlayers);
+  console.log(showButtons, showButtons.length);
   return (
     <div className={classes.container} data-win>
       <div className={classes.container2} data-loss>
@@ -1633,14 +1590,22 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
                 <div className={classes.roleSelect}>{roleSelector()}</div>
               )}
 
-              {showButtons && (
+              {showButtons.length && (
                 <div className={classes.buttonOptions}>
                   {showButtons.map((text, index) => {
-                    <button onClick={() => setGameChoice(index)}>
-                      <div>
-                        <span>{text}</span>
-                      </div>
-                    </button>;
+                    return (
+                      <button
+                        onClick={() => {
+                          setGameChoice(index);
+                          setShowButtons([]);
+                        }}
+                        className={classes.buttonop}
+                      >
+                        <div>
+                          <span>{text}</span>
+                        </div>
+                      </button>
+                    );
                   })}
                 </div>
               )}
