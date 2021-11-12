@@ -215,9 +215,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         setTimeout(() => {
           addToTopText(`${players[0].player} and ${
             players[1].player
-          } come face to face in a 1v1. Both champions are level ${
-            Math.random() * (5 - 1) + 1 + stage * 5
-          } and trade auto 
+          } come face to face in a 1v1. Both champions are level ${Math.floor(
+            Math.random() * 3 + stage * 2 + 1
+          )} and trade auto 
           attacks. Then, ${
             players[1].player
           } starts to engage. Do you back off, or stand your ground?`);
@@ -229,9 +229,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         setTimeout(() => {
           addToTopText(`${players[0].player} and ${
             players[1].player
-          } come face to face in a 1v1. Both champions are level ${
-            Math.random() * (5 - 1) + 1 + stage * 5
-          } and trade auto 
+          } come face to face in a 1v1. Both champions are level ${Math.floor(
+            Math.random() * 3 + stage * 2 + 1
+          )} and trade auto 
           attacks. Then, ${
             players[0].player
           } starts to engage. Do you continue engaging?`);
@@ -246,14 +246,64 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   const handle2v2 = (stage: number): void => {
     setEventNumber(2);
-    const rolesTo2v2 = [Math.floor(Math.random() * 5)];
-    setIsEnemyEvent(!!Math.floor(Math.random() * 2));
+    const rolesTo2v2 = [
+      Math.floor(Math.random() * 2),
+      Math.floor(Math.random() * 3) + 2,
+    ];
 
     const players: IPlayerData[][] = [
       [teamPlayers[rolesTo2v2[0]], teamPlayers[rolesTo2v2[1]]],
       [enemyPlayers[rolesTo2v2[0]], enemyPlayers[rolesTo2v2[1]]],
     ];
+    setEventPlayers([
+      [players[0][0]],
+      [players[0][1]],
+      [players[1][1]],
+      [players[1][1]],
+    ]);
     setShowButtons(["Back Off", "Engage"]);
+
+    const isEnemyEngage = [Math.floor(Math.random() * 2)];
+    if (isEnemyEngage) {
+      const startEvent = (callback: (word: string) => void): void => {
+        setTimeout(() => {
+          addToTopText(
+            `${players[0][0].player} and ${players[0][1].player} 
+            on your team are teaming up to clear vision when they run into 
+            ${players[1][0].player} and ${players[1][1].player}. 
+            Both ${players[0][0].player} and ${players[1][0].player} 
+            are level ${Math.floor(Math.random() * 3 + stage * 2 + 1)}, 
+            while ${players[0][1].player} and ${players[1][1].player} 
+            are level ${Math.floor(Math.random() * 3 + stage * 2 + 1)}. 
+            After landing some poke and bringing ${players[1][0].player} down 
+            to 40% HP, ${players[0][0].player} sees the angle for a free 
+            double kill and calls to engage. Should your team 
+            go all in to try and secure these kills?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+    } else {
+      const startEvent = (callback: (word: string) => void): void => {
+        setTimeout(() => {
+          addToTopText(
+            `${players[0][0].player} and ${players[0][1].player} 
+            on your team are teaming up to clear vision when they run into 
+            ${players[1][0].player} and ${players[1][1].player}. 
+            Both ${players[0][0].player} and ${players[1][0].player} 
+            are level ${Math.floor(Math.random() * 3 + stage * 2 + 1)}, 
+            while ${players[0][1].player} and ${players[1][1].player} 
+            are level ${Math.floor(Math.random() * 3 + stage * 2 + 1)}. 
+            After a short trade, ${players[0][0].player} is brought down 
+            to 40% HP. However, you know that neither enemy player has any 
+            summoner spells off cooldown, while both of your players have all 
+            summoner spells available. Should your team play it safe and back off, 
+            or try and go for the outplay?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+    }
 
     //player1 and player2 on your team are teaming up when they run into enemy1 and enemy2. player1 and enemy1 are level {5*(stage-1) + 1-5 1-5} and player2 and enemy 2 are leve X.
     // after trading abilities and using a health potion,  {either player} calls out to their teammate that this is the best chance they will get for a double kill
@@ -357,8 +407,28 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   const handleBackdoor = (): void => {
     setEventNumber(10);
+    const players: IPlayerData[] = [teamPlayers[0], teamPlayers[2]]; // Always top laner and mid laner
+    setEventPlayers([[players[0]], [players[1]]]);
+    setShowButtons(["Keep Scaling", "Go for the Backdoor"]);
 
-    setShowButtons(["Scale for Late Game", "Go for the Backdoor Win"]);
+    const startEvent = (callback: (word: string) => void): void => {
+      setTimeout(() => {
+        addToTopText(
+          `All of the enemy inhibs are down, and the enemy has an open Nexus. 
+          However, you lost the last teamfight pretty badly, and the enemy team 
+          is poised to take both Baron Nashor and the Elder Dragon. Your team is 
+          busy discussing a base defense strategy when 
+          ${
+            players[Math.floor(Math.random() * 2)].player
+          } notices a hidden ward 
+          in the enemy base and calls for a backdoor. Both 
+          ${players[0].player} and ${players[1].player} have Teleport available
+          and respawn in 5 seconds. Do you play it safe and continue scaling, 
+          or go for the backdoor win?`
+        );
+        setTimeout(() => {}, 8000);
+      }, 0);
+    };
 
     /* one of the players on your team notices the chance for a backdoor play. 
       very risky, but you could win the game off of it, regardless of points difference*/
