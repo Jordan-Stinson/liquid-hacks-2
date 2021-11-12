@@ -29,6 +29,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   const [eventPlayers, setEventPlayers] = useState<IPlayerData[][]>([]);
   const [gameChoice, setGameChoice] = useState<number>(-1);
   const [eventNumber, setEventNumber] = useState<number>(-1);
+  const [isEnemyEvent, setIsEnemyEvent] = useState<boolean>(false);
 
   useEffect(() => {
     const background = document.querySelector(
@@ -200,7 +201,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   const handle1v1 = (stage: number): void => {
     setEventNumber(1);
-
+    setIsEnemyEvent(!!Math.floor(Math.random() * 2));
     const roleTo1v1 = Math.floor(Math.random() * 5);
     const players: IPlayerData[] = [
       teamPlayers[roleTo1v1],
@@ -209,15 +210,14 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     setEventPlayers([[players[0]], [players[1]]]);
     setShowButtons(["Back Off", "Engage"]);
 
-    const isEnemyEngage = [Math.floor(Math.random() * 2)];
-    if (isEnemyEngage) {
+    if (isEnemyEvent) {
       const startEvent = (callback: (word: string) => void): void => {
         setTimeout(() => {
           addToTopText(`${players[0].player} and ${
             players[1].player
-          } come face to face in a 1v1. Both champions are level ${
-            Math.floor(Math.random() * 3 + stage * 2 + 1)
-          } and trade auto 
+          } come face to face in a 1v1. Both champions are level ${Math.floor(
+            Math.random() * 3 + stage * 2 + 1
+          )} and trade auto 
           attacks. Then, ${
             players[1].player
           } starts to engage. Do you back off, or stand your ground?`);
@@ -229,9 +229,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         setTimeout(() => {
           addToTopText(`${players[0].player} and ${
             players[1].player
-          } come face to face in a 1v1. Both champions are level ${
-            Math.floor(Math.random() * 3 + stage * 2 + 1)
-          } and trade auto 
+          } come face to face in a 1v1. Both champions are level ${Math.floor(
+            Math.random() * 3 + stage * 2 + 1
+          )} and trade auto 
           attacks. Then, ${
             players[0].player
           } starts to engage. Do you continue engaging?`);
@@ -246,13 +246,21 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   const handle2v2 = (stage: number): void => {
     setEventNumber(2);
-    const rolesTo2v2 = [Math.floor(Math.random() * 2), Math.floor(Math.random() * 3) + 2];
+    const rolesTo2v2 = [
+      Math.floor(Math.random() * 2),
+      Math.floor(Math.random() * 3) + 2,
+    ];
 
     const players: IPlayerData[][] = [
       [teamPlayers[rolesTo2v2[0]], teamPlayers[rolesTo2v2[1]]],
       [enemyPlayers[rolesTo2v2[0]], enemyPlayers[rolesTo2v2[1]]],
     ];
-    setEventPlayers([[players[0][0]], [players[0][1]], [players[1][1]], [players[1][1]]]);
+    setEventPlayers([
+      [players[0][0]],
+      [players[0][1]],
+      [players[1][1]],
+      [players[1][1]],
+    ]);
     setShowButtons(["Back Off", "Engage"]);
 
     const isEnemyEngage = [Math.floor(Math.random() * 2)];
@@ -303,6 +311,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   const handle5v5 = (): void => {
     setEventNumber(3);
     setShowButtons(["Back Off", "Engage"]);
+    setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
     // {all players meet mid} {one team heads towards baron and gets surrounded} {one team starts drake but then other team appears}.
     // your team calls out that they are ready to fight now, but you have to decide whether its worth the risk. you know that if you lose the teamfight,
@@ -313,17 +322,17 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   const handleTopGank = (): void => {
     setEventNumber(4);
     const rolesTo2v2 = [Math.floor(Math.random() * 5)];
+    setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
     while (rolesTo2v2.length != 2) {
       let temp = Math.floor(Math.random() * 5);
       if (temp != rolesTo2v2[0]) rolesTo2v2.push(temp);
     }
-    const isEnemyGank = [Math.floor(Math.random() * 2)];
 
-    const players: IPlayerData[] = isEnemyGank
+    const players: IPlayerData[] = isEnemyEvent
       ? [teamPlayers[1], enemyPlayers[1], enemyPlayers[0]]
       : [teamPlayers[1], enemyPlayers[1], teamPlayers[0]];
-    if (isEnemyGank) setShowButtons(["Back Off", "Stay in your lane"]);
+    if (isEnemyEvent) setShowButtons(["Back Off", "Stay in your lane"]);
     else setShowButtons(["Go Through River", "Go Around Back"]);
 
     // {if your gank} you notice your jungler has been warding his way up through the river, and is now close enough for a gank
@@ -336,6 +345,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   const handleRiftHerald = (): void => {
     const isEnemyRift = [Math.floor(Math.random() * 2)];
+    setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
     setEventNumber(5);
     /* top+mid of either team goes to fight it
@@ -344,8 +354,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
   const handleBotGank = (): void => {
     setEventNumber(6);
-    const isEnemyGank = [Math.floor(Math.random() * 2)];
-    if (isEnemyGank) setShowButtons(["Back Off", "Stay in your lane"]);
+    if (isEnemyEvent) setShowButtons(["Back Off", "Stay in your lane"]);
     else setShowButtons(["Go Through River", "Go Around Back"]);
 
     // {if your gank} you notice your jungler has been warding his way down through the river, and is now close enough for a gank
@@ -358,9 +367,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   const handleDrake = (): void => {
     setEventNumber(7);
-    const isEnemyGank = [Math.floor(Math.random() * 2)];
+    setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
-    if (isEnemyGank)
+    if (isEnemyEvent)
       setShowButtons(["Keep in your lane", "Try to steal drake"]);
     else setShowButtons(["Back for items", "Go for turrets"]);
     /* if enemy team is doing it, you have choice to flash in with jungler to try and steal
@@ -370,9 +379,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
   const handleSoulDrake = (): void => {
     setEventNumber(8);
-    const isEnemyGank = [Math.floor(Math.random() * 2)];
+    setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
-    if (isEnemyGank)
+    if (isEnemyEvent)
       setShowButtons(["Keep in your lane", "Try to steal drake"]);
     else setShowButtons(["Back for items", "Go for turrets"]);
     /* if enemy team is doing it, you have choice to flash in with jungler to try and steal
@@ -439,11 +448,14 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           However, you lost the last teamfight pretty badly, and the enemy team 
           is poised to take both Baron Nashor and the Elder Dragon. Your team is 
           busy discussing a base defense strategy when 
-          ${players[Math.floor(Math.random()*2)].player} notices a hidden ward 
+          ${
+            players[Math.floor(Math.random() * 2)].player
+          } notices a hidden ward 
           in the enemy base and calls for a backdoor. Both 
           ${players[0].player} and ${players[1].player} have Teleport available
           and respawn in 5 seconds. Do you play it safe and continue scaling, 
-          or go for the backdoor win?`);
+          or go for the backdoor win?`
+        );
         setTimeout(() => {}, 8000);
       }, 0);
     };
@@ -831,11 +843,202 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     );
   };
 
-  const smallRisk = () => {};
+  const smallRisk = () => {
+    const teamOdds = eventPlayers[0].reduce((x, y) => x + y.overall, 0);
+    const enemyOdds = eventPlayers[1].reduce((x, y) => x + y.overall, 0);
+    const playerIsWinner =
+      Math.floor(Math.random() * (teamOdds + enemyOdds)) <= teamOdds;
+    if (playerIsWinner) {
+      setPlayerPoints(playerPoints + gameStage);
+    } else {
+      setEnemyPoints(enemyPoints + gameStage);
+    }
+    handleEventEnd(playerIsWinner);
+  };
 
-  const midRisk = () => {};
+  const midRisk = () => {
+    const teamOdds = eventPlayers[0].reduce((x, y) => x + y.overall, 0);
+    const enemyOdds = eventPlayers[1].reduce((x, y) => x + y.overall, 0);
+    const playerIsWinner =
+      Math.floor(Math.random() * (teamOdds + enemyOdds)) <= teamOdds;
+    if (playerIsWinner) {
+      setPlayerPoints(playerPoints + 2 * gameStage);
+    } else {
+      setEnemyPoints(enemyPoints + 2 * gameStage);
+    }
+    handleEventEnd(playerIsWinner);
+  };
 
-  const bigRisk = () => {};
+  const bigRisk = () => {
+    const teamOdds = eventPlayers[0].reduce((x, y) => x + y.overall, 0);
+    const enemyOdds = eventPlayers[1].reduce((x, y) => x + y.overall, 0);
+    const playerIsWinner =
+      Math.floor(Math.random() * (teamOdds + enemyOdds)) <= teamOdds;
+    if (playerIsWinner) {
+      setPlayerPoints(playerPoints + 3 * gameStage);
+    } else {
+      setEnemyPoints(enemyPoints + 3 * gameStage);
+    }
+    handleEventEnd(playerIsWinner);
+  };
+
+  const handleEventEnd = (playerWon: boolean) => {
+    if (playerWon) {
+      switch (eventNumber) {
+        case 1:
+          /*you won*/
+          `After gracefully dodging a skillshot ${eventPlayers[0][0].player} engages! Although ${eventPlayers[1][0].player} puts
+          up a fight, they ultimately die, giving  ${eventPlayers[0][0].player} the advantage.`;
+          break;
+        case 2:
+          /*you won*/
+          `Using their superb teamwork ${eventPlayers[0][0].player} and ${eventPlayers[0][1].player} trap ${eventPlayers[1][0].player}! ${eventPlayers[1][1].player} tries
+         to help, but is too late. Your team secures the kill and gets out alive`;
+          break;
+        case 3:
+          /*you won*/
+          `After some skirmishing,  ${
+            eventPlayers[0][Math.floor(Math.random() * 5)].player
+          } hits a huge ultimate, decimating the other team. Then,  ${
+            eventPlayers[0][Math.floor(Math.random() * 5)].player
+          } 
+          cleans up the rest of the enemy team. ACE!`;
+          break;
+        case 4:
+          /*you won*/
+          if (isEnemyEvent) {
+            `${eventPlayers[1][1].player} walks up behind you, but ${eventPlayers[0][0].player} flashes out at the last second, staying alive to see another fight.`;
+          } else {
+            `${eventPlayers[0][1].player} gets the jump on ${eventPlayers[1][0].player}, and with the support of ${eventPlayers[0][0].player} your team gets the shutdown on ${eventPlayers[1][0].player}`;
+          }
+
+          break;
+        case 5:
+          if (isEnemyEvent) {
+            `After the other team starts rift herald, your top, mid, and jungle team up to push them off, allowing you to secure the eye of the herald`;
+          } else {
+            `You kill the rift herald, letting you gain the upper hand in gold and pressure`;
+          }
+          break;
+        case 6:
+          if (isEnemyEvent) {
+            `${eventPlayers[1][1].player} walks up behind you, but ${eventPlayers[0][0].player} flashes out at the last second, staying alive to see another fight.`;
+          } else {
+            `${eventPlayers[0][1].player} gets the jump on ${eventPlayers[1][0].player}, and with the support of ${eventPlayers[0][0].player} your team gets the shutdown on ${eventPlayers[1][0].player}`;
+          }
+          break;
+        case 7:
+          if (isEnemyEvent) {
+            `${eventPlayers[0][0].player} steals the first drake and makes it out alive!`;
+          } else {
+            `Your team gets the first drake of the game, a huge boost to your confidence and extending your lead`;
+          }
+          break;
+        case 8:
+          if (isEnemyEvent) {
+            `${eventPlayers[0][0].player} steals the soul drake and makes it out alive!`;
+          } else {
+            `Your team gets the soul drake, a huge boost to your stats and extending your lead`;
+          }
+          break;
+        case 9:
+          if (isEnemyEvent) {
+            `${eventPlayers[0][0].player} steals the elder drake and makes it out alive!`;
+          } else {
+            `Your team gets the elder drake, a huge boost to your team power and extending your lead`;
+          }
+          break;
+        case 10:
+          `${eventPlayers[0][0].player} backdoors the other team! You win!`;
+
+          break;
+        case 11:
+          if (isEnemyEvent) {
+            `${eventPlayers[0][0].player} steals baron in exchange for their life!`;
+          } else {
+            `Your team slays baron. With a 3 minute Baron powerplay, your team pulls ahead in the game!`;
+          }
+          break;
+      }
+    } else {
+      switch (eventNumber) {
+        case 1:
+          /*you won*/
+          `After gracefully dodging a skillshot ${eventPlayers[1][0].player} engages! Although ${eventPlayers[0][0].player} puts
+          up a fight, they ultimately die, giving  ${eventPlayers[1][0].player} the advantage.`;
+          break;
+        case 2:
+          /*you won*/
+          `Using their superb teamwork ${eventPlayers[1][0].player} and ${eventPlayers[1][1].player} trap ${eventPlayers[0][0].player}! ${eventPlayers[0][1].player} tries
+         to help, but is too late. The opponent's team secures the kill and gets out alive`;
+          break;
+        case 3:
+          /*you won*/
+          `After some skirmishing,  ${
+            eventPlayers[1][Math.floor(Math.random() * 5)].player
+          } hits a huge ultimate, decimating the other team. Then,  ${
+            eventPlayers[1][Math.floor(Math.random() * 5)].player
+          } 
+          cleans up the rest of your team. ACE!`;
+          break;
+        case 4:
+          /*you won*/
+          if (isEnemyEvent) {
+            `${eventPlayers[0][1].player} walks up behind the opponent, but ${eventPlayers[1][0].player} flashes out at the last second, staying alive to see another fight.`;
+          } else {
+            `${eventPlayers[1][1].player} gets the jump on ${eventPlayers[0][0].player}, and with the support of ${eventPlayers[1][0].player} their team gets the shutdown on ${eventPlayers[0][0].player}`;
+          }
+
+          break;
+        case 5:
+          if (isEnemyEvent) {
+            `After your team starts rift herald, the other team's top, mid, and jungle team up to push you off, allowing them to secure the eye of the herald`;
+          } else {
+            `The other team kill the rift herald, letting them gain the upper hand in gold and pressure`;
+          }
+          break;
+        case 6:
+          if (isEnemyEvent) {
+            `${eventPlayers[0][1].player} walks up behind the opponent, but ${eventPlayers[1][0].player} flashes out at the last second, staying alive to see another fight.`;
+          } else {
+            `${eventPlayers[1][1].player} gets the jump on ${eventPlayers[0][0].player}, and with the support of ${eventPlayers[1][0].player} their team gets the shutdown on ${eventPlayers[0][0].player}`;
+          }
+          break;
+        case 7:
+          if (isEnemyEvent) {
+            `${eventPlayers[1][0].player} steals the first drake and makes it out alive!`;
+          } else {
+            `The other team team gets the first drake of the game, a huge boost to their confidence and extending their lead`;
+          }
+          break;
+        case 8:
+          if (isEnemyEvent) {
+            `${eventPlayers[1][0].player} steals the soul drake and makes it out alive!`;
+          } else {
+            `The other team gets the soul drake, a huge boost to their stats and extending their lead`;
+          }
+          break;
+        case 9:
+          if (isEnemyEvent) {
+            `${eventPlayers[1][0].player} steals the elder drake and makes it out alive!`;
+          } else {
+            `The other team gets the elder drake, a huge boost to their team power and extending their lead`;
+          }
+          break;
+        case 10:
+          `${eventPlayers[0][0].player} fails to backdoor the other team. Your team falls even further behind`;
+
+          break;
+        case 11:
+          if (isEnemyEvent) {
+            `${eventPlayers[1][0].player} steals baron in exchange for their life!`;
+          } else {
+            `The other team slays baron. With a 3 minute Baron powerplay, the other team pulls ahead in the game!`;
+          }
+          break;
+      }
+    }
+  };
 
   useEffect(() => {
     if (gameChoice == -1) return;
