@@ -379,10 +379,38 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handleRiftHerald = (): void => {
-    const isEnemyRift = [Math.floor(Math.random() * 2)];
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
     setEventNumber(5);
+
+    if (isEnemyEvent)  {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons(["Bring up your team and look for a fight", "Back off and leave your players to farm"]);
+          addToTopText(
+            `The enemy team is positioned to take down the Rift Herald! They've rotated their laners around and
+            seem to be committed to this objective. In the right hands, the Rift Herald can help break down a lane.
+            Will you risk handing this over to them, or face them head-on in the topside river?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+      startEvent();
+    } else {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons(["Defend your position and prepare for a teamfight", "Leave your jungler to take the objective and farm instead."]);
+          addToTopText(
+            `The Rift Herald is an important early and mid game objective. Your team recognizes this, and through temporary
+            laning priority gains, you see the opportunity to secure this objective. You start it off, and notice that the
+            enemy team may be making a move to contest this! Do you commit resources to helping your jungler, or do you call
+            your enemies' bluff, returning your laners to maximize their profits by collecting farm in their lanes?
+            `
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+      startEvent();
     /* top+mid of either team goes to fight it
     no interaction. just calc and display which team gets it
     */
@@ -461,7 +489,22 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       };
       startEvent();
     }
-    else setShowButtons(["Back for items", "Go for turrets"]);
+    else {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons(["Attempt to burst down the dragon", "Force teamfight with enemy"]);
+          addToTopText(
+            `You find yourselves with control over the bottom river as the Elemental soul dragon spawns!
+            However, you know that the enemy team will not give this one up. Your suspicions are confirmed as
+            ${players[6].Player} is spotted preparing for a flash-smite steal. The rest of the enemy team show up behind
+            them baring fangs. What will you do here? This decision could turn the game on its head!
+            `
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+      startEvent();
+    }
     /* if enemy team is doing it, you have choice to flash in with jungler to try and steal
     can eitehr steal, fail steal and live, or die, which is win, small loss, or big loss
     if your team is doing it, choice of whether to back for items (small point gain) or look for fights (can trigger any xvx fight)
