@@ -7,7 +7,7 @@ export default (req, res) => {
   const dir = path.resolve(dirRelativeToPublicFolder);
 
   const filenames = fs.readdirSync(dir);
-
+  console.log(filenames);
   const images = filenames.map((name) =>
     path.join("/", dirRelativeToPublicFolder, name)
   );

@@ -1,17 +1,21 @@
 export interface IPlayerData {
-  player: string;
-  nationality: string;
-  region: string;
-  import: boolean;
-  team: string;
-  position: string;
-  lan: number;
-  vis: number;
-  car: number;
-  exp: number;
-  ver: number;
-  thr: number;
-  overall: number;
+  "Card Type": string;
+  Carry: number;
+  Experience: number;
+  "Flag Link": string;
+  "Headshot Link": string;
+  Import: boolean;
+  Laning: number;
+  Nationality: string;
+  Overall: number;
+  Player: string;
+  Position: string;
+  Region: string;
+  Team: string;
+  "Team Logo Link": string;
+  Threat: number;
+  Versatility: number;
+  Vision: number;
 }
 
 export enum RatingBreakpoints {
