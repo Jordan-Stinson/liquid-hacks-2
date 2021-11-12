@@ -211,11 +211,11 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       enemyPlayers[roleTo1v1],
     ];
     setEventPlayers([[players[0]], [players[1]]]);
-    setShowButtons(["Back Off", "Engage"]);
 
     if (isEnemyEvent) {
-      const startEvent = (callback: (word: string) => void): void => {
+      const startEvent = (): void => {
         setTimeout(() => {
+          setShowButtons(["Back Off", "Engage"]);
           addToTopText(`${players[0].Player} and ${
             players[1].Player
           } come face to face in a 1v1. Both champions are level ${Math.floor(
@@ -227,9 +227,11 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           setTimeout(() => {}, 8000);
         }, 0);
       };
+      startEvent();
     } else {
-      const startEvent = (callback: (word: string) => void): void => {
+      const startEvent = (): void => {
         setTimeout(() => {
+          setShowButtons(["Back Off", "Engage"]);
           addToTopText(`${players[0].Player} and ${
             players[1].Player
           } come face to face in a 1v1. Both champions are level ${Math.floor(
@@ -241,6 +243,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           setTimeout(() => {}, 8000);
         }, 0);
       };
+      startEvent();
     }
     //player1 and player2 come face to face. both are level {5*(stage-1) + 1-5} and trade autos, before {either player} decides
     //to start engaging. {if you are the one engaging, do you continue to engage} {if they engaged, do you take the fight or leave}
@@ -251,7 +254,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     setEventNumber(2);
     const rolesTo2v2 = [
       Math.floor(Math.random() * 2),
-      Math.floor(Math.random() * 3) + 2,
+      Math.floor(Math.random() * 2) + 2,
     ];
 
     const players: IPlayerData[][] = [
@@ -264,12 +267,12 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       [players[1][1]],
       [players[1][1]],
     ]);
-    setShowButtons(["Back Off", "Engage"]);
 
     const isEnemyEngage = [Math.floor(Math.random() * 2)];
     if (isEnemyEngage) {
-      const startEvent = (callback: (word: string) => void): void => {
+      const startEvent = (): void => {
         setTimeout(() => {
+          setShowButtons(["Back Off", "Engage"]);
           addToTopText(
             `${players[0][0].Player} and ${players[0][1].Player} 
             on your team are teaming up to clear vision when they run into 
@@ -287,9 +290,11 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           setTimeout(() => {}, 8000);
         }, 0);
       };
+      startEvent();
     } else {
-      const startEvent = (callback: (word: string) => void): void => {
+      const startEvent = (): void => {
         setTimeout(() => {
+          setShowButtons(["Back Off", "Engage"]);
           addToTopText(
             `${players[0][0].Player} and ${players[0][1].Player} 
             on your team are teaming up to clear vision when they run into 
@@ -306,6 +311,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           setTimeout(() => {}, 8000);
         }, 0);
       };
+      startEvent();
     }
 
     //player1 and player2 on your team are teaming up when they run into enemy1 and enemy2. player1 and enemy1 are level {5*(stage-1) + 1-5 1-5} and player2 and enemy 2 are leve X.
@@ -318,6 +324,65 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     setShowButtons(["Back Off", "Engage"]);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
+    const players: IPlayerData[] = [
+      teamPlayers[0],
+      teamPlayers[1],
+      teamPlayers[2],
+      teamPlayers[3],
+      teamPlayers[4],
+      enemyPlayers[0],
+      enemyPlayers[1],
+      enemyPlayers[2],
+      enemyPlayers[3],
+      enemyPlayers[4],
+    ];
+    setEventPlayers([
+      [players[0]],
+      [players[1]],
+      [players[2]],
+      [players[3]],
+      [players[4]],
+      [players[5]],
+      [players[6]],
+      [players[7]],
+      [players[8]],
+      [players[9]],
+    ]);
+
+    if (isEnemyEvent) {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons(["Back off", "Engage"]);
+          addToTopText(
+            `Both teams are posturing around mid lane, trying to gain lane priority before
+            the next objective spawns. As a result of your previous skirmishes, ${players[3].Player}
+            has 1 minute left on his Flash cooldown. Suddenly, ${players[4].Player} spots a Teleport 
+            channelling on a flank ward in the Wolf pit behind your team. Do you run back towards your
+            mid lane tower, or engage on the enemy team before they can engage on you?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+        startEvent();
+      };
+    } else {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons(["Back off", "Engage"]);
+          addToTopText(
+            `Both teams are posturing around mid lane, trying to gain lane priority before
+            the next objective spawns. From your previous skirmishes, you know that ${players[8].Player}
+            has 30 seconds left on his Flash cooldown, but ${players[4].Player} has 25 seconds left
+            on his R cooldown. There are two flank wards in the enemy jungle, 
+            and both ${players[0].Player} and ${players[2].Player} have Teleport available. Do you 
+            set up a TP flank and force the engage? Or do you play it slow and wait for all ultimates 
+            to be available?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+        startEvent();
+      };
+    }
+
     // {all players meet mid} {one team heads towards baron and gets surrounded} {one team starts drake but then other team appears}.
     // your team calls out that they are ready to fight now, but you have to decide whether its worth the risk. you know that if you lose the teamfight,
     //it will be hard to comeback, but not taking the teamfight means the other team will likely get an objective
@@ -326,20 +391,49 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   const handleTopGank = (): void => {
     setEventNumber(4);
-    const rolesTo2v2 = [Math.floor(Math.random() * 5)];
+
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
-    while (rolesTo2v2.length != 2) {
-      let temp = Math.floor(Math.random() * 5);
-      if (temp != rolesTo2v2[0]) rolesTo2v2.push(temp);
-    }
-
     const players: IPlayerData[] = isEnemyEvent
-      ? [teamPlayers[1], enemyPlayers[1], enemyPlayers[0]]
-      : [teamPlayers[1], enemyPlayers[1], teamPlayers[0]];
-    if (isEnemyEvent) setShowButtons(["Back Off", "Stay in your lane"]);
-    else setShowButtons(["Go Through River", "Go Around Back"]);
+      ? [teamPlayers[0], enemyPlayers[0], enemyPlayers[1]]
+      : [
+          teamPlayers[0],
+          teamPlayers[1],
+          enemyPlayers[0],
+          enemyPlayers[1],
+          enemyPlayers[2],
+        ];
 
+    if (isEnemyEvent) {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons(["Clear the wave", "Back off"]);
+          addToTopText(
+            `${players[0].Player} is playing forward, trying to push out his lane
+            in order to get a better reset. Suddenly, he spots ${players[2].Player}
+            clearing a ward in the top river brush. Should ${players[0].Player} finish
+            clearing the minion wave, or back off immediately?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+        startEvent();
+      };
+    } else {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons(["Gank top lane", "Clear camps"]);
+          addToTopText(
+            `After some heavy trading, both ${players[0].Player} and ${players[2].Player} 
+            are 30% HP. ${players[1].Player} is currently in the top river, and begins 
+            pathing towards top lane. However, both ${players[3].Player} and ${players[4].Player} 
+            are missing, and haven't been spotted on any wards in quite some time. Should 
+            ${players[1].Player} gank top lane, or go back to clearing his camps?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+        startEvent();
+      };
+    }
     // {if your gank} you notice your jungler has been warding his way up through the river, and is now close enough for a gank
     // do you tell him to try and pinsir attack the other top laner from behind, or join you up front for a full assault
     // you gain points if you kill, enemy cant get points
@@ -349,26 +443,108 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handleRiftHerald = (): void => {
-    const isEnemyRift = [Math.floor(Math.random() * 2)];
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
     setEventNumber(5);
-    /* top+mid of either team goes to fight it
+
+    if (isEnemyEvent) {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons([
+            "Bring up your team and look for a fight",
+            "Back off and leave your players to farm",
+          ]);
+          addToTopText(
+            `The enemy team is positioned to take down the Rift Herald! They've rotated their laners around and
+            seem to be committed to this objective. In the right hands, the Rift Herald can help break down a lane.
+            Will you risk handing this over to them, or face them head-on in the topside river?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+      startEvent();
+    } else {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons([
+            "Defend your position and prepare for a teamfight",
+            "Leave your jungler to take the objective and farm instead.",
+          ]);
+          addToTopText(
+            `The Rift Herald is an important early and mid game objective. Your team recognizes this, and through temporary
+            laning priority gains, you see the opportunity to secure this objective. You start it off, and notice that the
+            enemy team may be making a move to contest this! Do you commit resources to helping your jungler, or do you call
+            your enemies' bluff, returning your laners to maximize their profits by collecting farm in their lanes?
+            `
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+      startEvent();
+      /* top+mid of either team goes to fight it
     no interaction. just calc and display which team gets it
     */
+    }
   };
+
   const handleBotGank = (): void => {
     setEventNumber(6);
-    if (isEnemyEvent) setShowButtons(["Back Off", "Stay in your lane"]);
-    else setShowButtons(["Go Through River", "Go Around Back"]);
+    setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
-    // {if your gank} you notice your jungler has been warding his way down through the river, and is now close enough for a gank
-    // do you tell him to try and pinsir attack the bottom laner from behind, or do you lure the enemy up towards the river
-    // you gain points if you kill, enemy cant get points
-    // {if enemy gank} your teammate pings the map, letting you know the enemy jungler is missing. do you continue to push the wave
-    // or do you play it safe.
-    //enemy can get points if you die,
+    const players: IPlayerData[] = isEnemyEvent
+      ? [
+          teamPlayers[3],
+          teamPlayers[4],
+          enemyPlayers[3],
+          enemyPlayers[4],
+          enemyPlayers[2],
+        ]
+      : [
+          teamPlayers[2],
+          teamPlayers[3],
+          teamPlayers[4],
+          enemyPlayers[3],
+          enemyPlayers[4],
+        ];
+
+    if (isEnemyEvent) {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons(["Clear the wave", "Back off"]);
+          addToTopText(
+            `${players[0].Player} and ${players[1].Player} are playing forward, trying to
+              push their lane out in order to get a better reset. Suddenly, they spot
+              ${players[4].Player} clearing a ward in the bottom river brush. Should
+              ${players[0].Player} and ${players[1].Player} finish clearing the minion wave,
+              or back off immediately?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+        startEvent();
+      };
+    } else {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons(["Gank top lane", "Clear camps"]);
+          addToTopText(
+            `After some heavy trading, both botlanes are 40% HP. ${players[0].Player} is currently
+              in the bottom river, and begins pathing towards bot lane. However, both ${players[3].Player}
+              and ${players[4].Player} are missing, and haven't been spotted on any wards in quite
+              some time. Should ${players[0].Player} gank bottom lane, or go back to clearing his camps?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+        startEvent();
+      };
+    }
   };
+
+  // {if your gank} you notice your jungler has been warding his way down through the river, and is now close enough for a gank
+  // do you tell him to try and pinsir attack the bottom laner from behind, or do you lure the enemy up towards the river
+  // you gain points if you kill, enemy cant get points
+  // {if enemy gank} your teammate pings the map, letting you know the enemy jungler is missing. do you continue to push the wave
+  // or do you play it safe.
+  //enemy can get points if you die,
 
   const handleDrake = (): void => {
     setEventNumber(7);
@@ -439,7 +615,25 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         }, 0);
       };
       startEvent();
-    } else setShowButtons(["Back for items", "Go for turrets"]);
+    } else {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons([
+            "Attempt to burst down the dragon",
+            "Force teamfight with enemy",
+          ]);
+          addToTopText(
+            `You find yourselves with control over the bottom river as the Elemental soul dragon spawns!
+            However, you know that the enemy team will not give this one up. Your suspicions are confirmed as
+            ${players[6].Player} is spotted preparing for a flash-smite steal. The rest of the enemy team show up behind
+            them baring fangs. What will you do here? This decision could turn the game on its head!
+            `
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+      startEvent();
+    }
     /* if enemy team is doing it, you have choice to flash in with jungler to try and steal
     can eitehr steal, fail steal and live, or die, which is win, small loss, or big loss
     if your team is doing it, choice of whether to back for items (small point gain) or look for fights (can trigger any xvx fight)
@@ -493,7 +687,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     } else {
       const startEvent = (): void => {
         setTimeout(() => {
-          setShowButtons(["Go for the steal", "Look for a fight"]);
+          setShowButtons(["Finish the Elder", "Look for a fight"]);
           addToTopText(
             `You've secured vision in the enemy jungle, and cleared all enemy wards 
             within the bottom river and Dragon pit. After spotting ${players[8].Player}
@@ -542,10 +736,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     setEventNumber(10);
     const players: IPlayerData[] = [teamPlayers[0], teamPlayers[2]]; // Always top laner and mid laner
     setEventPlayers([[players[0]], [players[1]]]);
-    setShowButtons(["Keep Scaling", "Go for the Backdoor"]);
 
     const startEvent = (): void => {
       setTimeout(() => {
+        setShowButtons(["Keep Scaling", "Go for the Backdoor"]);
         addToTopText(
           `All of the enemy inhibs are down, and the enemy has an open Nexus. 
           However, you lost the last teamfight pretty badly, and the enemy team 
