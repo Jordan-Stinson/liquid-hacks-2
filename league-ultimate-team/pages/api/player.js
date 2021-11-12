@@ -1,7 +1,7 @@
 const mainDataset = require("../../public/data/mainDataset.json"); // Requiring a JSON file reads and parses it. Good for static files that don't change.
 
 function getRandomPlayer(sizeOfArr) {
-  return Math.floor(Math.random() * sizeOfArr);
+    return Math.floor(Math.random() * sizeOfArr);
 }
 
 export default function getPlayerFromRole(req, res) {
@@ -28,7 +28,7 @@ export default function getPlayerFromRole(req, res) {
         sup.push(data);
     }
   });
-  var player = -1;
+  let player = -1;
   if (req.method === "POST") {
     switch (req.body.role) {
       case "TOP":
