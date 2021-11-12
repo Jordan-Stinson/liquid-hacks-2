@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { callbackify } from "util";
 import getPlayerFromRole from "../../pages/api/player";
 import useSWR from "swr";
+import { getRedirectStatus } from "next/dist/lib/load-custom-routes";
 
 export interface PickProps {}
 
@@ -72,7 +73,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   async function addToTopText(text: string) {
     let i = 0;
-    let speed = 50;
+    let speed = 40;
     const words = document.querySelector(
       "div[data-top-text]"
     ) as unknown as HTMLDivElement;
@@ -90,67 +91,68 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       "div[data-top-text]"
     ) as unknown as HTMLDivElement;
 
-    let speed = 50;
+    let speed = 10;
     if (words.innerHTML.length) {
       words.innerHTML = words.innerHTML.slice(0, -1);
       setTimeout(removeTopText, speed);
     }
   }
 
+  async function playerSelect2(role: string) {
+    let tPlayers: IPlayerData[] = [];
+
+    let speed = 100;
+
+    async function callbackFunction() {
+      let newPlayer: IPlayerData;
+
+      postData("/api/player", { role: role }).then((data) => {
+        newPlayer = { ...data };
+        let dupe = false;
+        if (teamPlayers[0].Player == newPlayer.Player) dupe = true;
+
+        if (!dupe && tPlayers.length < 5) tPlayers.push(newPlayer);
+        if (tPlayers.length < 1 || players.length < 1) {
+          setTimeout(callbackFunction, speed);
+        } else {
+          if (role == "TOP") {
+            const existing = [...enemyPlayers];
+            existing[0] = tPlayers[0];
+            setPlayers(existing);
+          }
+          if (role == "JG") {
+            const existing = [...enemyPlayers];
+            existing[1] = tPlayers[0];
+            setPlayers(existing);
+          }
+          if (role == "MID") {
+            const existing = [...enemyPlayers];
+            existing[2] = tPlayers[0];
+            setPlayers(existing);
+          }
+          if (role == "ADC") {
+            const existing = [...enemyPlayers];
+            existing[3] = tPlayers[0];
+            setPlayers(existing);
+          }
+          if (role == "SUP") {
+            const existing = [...enemyPlayers];
+            existing[4] = tPlayers[0];
+            setPlayers(existing);
+          }
+        }
+      });
+    }
+    callbackFunction();
+  }
+
   const createEnemyTeam = async () => {
-    let ep: IPlayerData[] = [];
-    while (ep.length != 1) {
-      let newPlayer: IPlayerData;
-      postData("/api/player", { role: "TOP" }).then((data) => {
-        console.log(data); // JSON data parsed by `data.json()` call
-        newPlayer = { ...data };
-        let dupe = false;
-        if (teamPlayers[0].Player == newPlayer.Player) dupe = true;
-        if (!dupe) ep.push(newPlayer);
-      });
-    }
-    //@ts-ignore
-    while (ep.length != 2) {
-      let newPlayer: IPlayerData;
-      postData("/api/player", { role: "JG" }).then((data) => {
-        console.log(data); // JSON data parsed by `data.json()` call
-        newPlayer = { ...data };
-        let dupe = false;
-        if (teamPlayers[0].Player == newPlayer.Player) dupe = true;
-        if (!dupe) ep.push(newPlayer);
-      });
-    }
-    while (ep.length != 3) {
-      let newPlayer: IPlayerData;
-      postData("/api/player", { role: "MID" }).then((data) => {
-        console.log(data); // JSON data parsed by `data.json()` call
-        newPlayer = { ...data };
-        let dupe = false;
-        if (teamPlayers[0].Player == newPlayer.Player) dupe = true;
-        if (!dupe) ep.push(newPlayer);
-      });
-    }
-    while (ep.length != 4) {
-      let newPlayer: IPlayerData;
-      postData("/api/player", { role: "ADC" }).then((data) => {
-        console.log(data); // JSON data parsed by `data.json()` call
-        newPlayer = { ...data };
-        let dupe = false;
-        if (teamPlayers[0].Player == newPlayer.Player) dupe = true;
-        if (!dupe) ep.push(newPlayer);
-      });
-    }
-    while (ep.length != 5) {
-      let newPlayer: IPlayerData;
-      postData("/api/player", { role: "SUP" }).then((data) => {
-        console.log(data); // JSON data parsed by `data.json()` call
-        newPlayer = { ...data };
-        let dupe = false;
-        if (teamPlayers[0].Player == newPlayer.Player) dupe = true;
-        if (!dupe) ep.push(newPlayer);
-      });
-    }
-    setEnemyPlayers(ep);
+    console.log("here");
+    playerSelect2("TOP");
+    playerSelect2("JG");
+    playerSelect2("MID");
+    playerSelect2("ADC");
+    playerSelect2("SUP");
   };
 
   const start = (callback: (word: string) => void): void => {
@@ -214,7 +216,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       setTimeout(() => {
         customMask1(0);
         setTimeout(() => {
-          addToTopText(`The A.I. has chosen the following team`);
+          addToTopText(`The A.I. has chosen the following team.`);
           setTimeout(() => {
             createEnemyTeam();
             setTimeout(() => {
@@ -891,12 +893,12 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   async function playerSelect(role: string) {
     let tPlayers: IPlayerData[] = [];
 
-    let speed = 1000;
+    let speed = 500;
 
     async function callbackFunction() {
       let newPlayer: IPlayerData;
 
-      postData("/api/player", { role: "TOP" }).then((data) => {
+      postData("/api/player", { role: role }).then((data) => {
         newPlayer = { ...data };
         let dupe = false;
         for (let i = 0; i < tPlayers.length; i++) {
@@ -912,21 +914,18 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     }
     callbackFunction();
   }
-  useEffect(() => {
-    console.log(players, "tp");
-  }, [players]);
 
-  const roleSelector = (role: number): ReactElement => {
-    if (!role) return <></>;
-    if (role == 1) {
+  const roleSelector = (): ReactElement => {
+    if (!roleSelect) return <></>;
+    if (roleSelect == 1) {
       playerSelect("TOP");
-    } else if (role == 2) {
+    } else if (roleSelect == 2) {
       playerSelect("JG");
-    } else if (role == 3) {
+    } else if (roleSelect == 3) {
       playerSelect("MID");
-    } else if (role == 4) {
+    } else if (roleSelect == 4) {
       playerSelect("ADC");
-    } else if (role == 5) {
+    } else if (roleSelect == 5) {
       playerSelect("SUP");
     } else {
       return <></>;
@@ -934,7 +933,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     return (
       <div className={classes.fivePlayerContainer}>
         {players.map((player: IPlayerData, index: number) => {
-          const playerCard = require(`../../public/images/playerCards/${player.Player}.png`);
+          const playerCard = require(`../../public/images/playerCards/${player.Player.split(
+            " "
+          ).join("_")}.png`);
 
           return (
             <div className={classes.PlayerCard} data-player-card>
@@ -943,8 +944,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
                   let existingPlayers = [...teamPlayers];
                   existingPlayers.push(player);
                   addTeamPlayers(existingPlayers);
-                  setPlayers([]);
                   setRoleSelect(roleSelect + 1);
+
+                  setPlayers([]);
                 }}
                 style={{ background: "none", border: "none" }}
               >
@@ -958,7 +960,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             </div>
           );
         })}
-        {console.log(players, "PLAYERS")}
         <div></div>
       </div>
     );
@@ -1198,9 +1199,201 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     }
   }, [gameChoice]);
 
+  const grid = (): ReactElement => {
+    const teamPlayerCards = teamPlayers.map((player) =>
+      require(`../../public/images/playerCards/${player.Player.split(" ").join(
+        "_"
+      )}.png`)
+    );
+    const enemyPlayerCards = enemyPlayers.map((player) =>
+      require(`../../public/images/playerCards/${player.Player.split(" ").join(
+        "_"
+      )}.png`)
+    );
+    return (
+      <div>
+        <div className={classes.row}>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}>
+            {" "}
+            <Image
+              src={teamPlayerCards[3]}
+              width={200}
+              height={300}
+              layout={"fixed"}
+            />
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <Image
+              src={teamPlayerCards[4]}
+              width={200}
+              height={300}
+              layout={"fixed"}
+            />
+          </div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+        </div>
+        <div className={classes.row}>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+        </div>
+        <div className={classes.row}>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}>
+            {" "}
+            <Image
+              src={enemyPlayerCards[4]}
+              width={200}
+              height={300}
+              layout={"fixed"}
+            />
+          </div>
+        </div>
+        <div className={classes.row}>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}>
+            {" "}
+            <Image
+              src={teamPlayerCards[2]}
+              width={200}
+              height={300}
+              layout={"fixed"}
+            />
+          </div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}>
+            {" "}
+            <Image
+              src={enemyPlayerCards[3]}
+              width={200}
+              height={300}
+              layout={"fixed"}
+            />
+          </div>
+        </div>
+        <div className={classes.row}>
+          <div className={classes.column}></div>
+          <div className={classes.column}>
+            {" "}
+            <Image
+              src={teamPlayerCards[1]}
+              width={200}
+              height={300}
+              layout={"fixed"}
+            />
+          </div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}>
+            {" "}
+            <Image
+              src={enemyPlayerCards[2]}
+              width={200}
+              height={300}
+              layout={"fixed"}
+            />
+          </div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+        </div>
+        <div className={classes.row}>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+        </div>
+        <div className={classes.row}>
+          <div className={classes.column}>
+            {" "}
+            <Image
+              src={teamPlayerCards[0]}
+              width={200}
+              height={300}
+              layout={"fixed"}
+            />
+          </div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}>
+            {" "}
+            <Image
+              src={enemyPlayerCards[1]}
+              width={200}
+              height={300}
+              layout={"fixed"}
+            />
+          </div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+        </div>
+        <div className={classes.row}>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}>
+            {" "}
+            <Image
+              src={enemyPlayerCards[0]}
+              width={200}
+              height={300}
+              layout={"fixed"}
+            />
+          </div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+          <div className={classes.column}></div>
+        </div>
+      </div>
+    );
+  };
+
   useEffect(() => {
     start((text) => console.log(text));
-    //startGame((text) => console.log(text));
   }, []);
 
   useEffect(() => {
@@ -1208,6 +1401,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       startGame((text) => console.log(text));
     }
   }, [roleSelect]);
+  console.log(teamPlayers, enemyPlayers);
   return (
     <div className={classes.container} data-win>
       <div className={classes.container2} data-loss>
@@ -1216,9 +1410,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             <div className={classes.mask} data-mask>
               <div className={classes.topText} data-top-text></div>
 
-              <div className={classes.roleSelect}>
-                {roleSelector(roleSelect)}
-              </div>
+              <div className={classes.roleSelect}>{roleSelector()}</div>
 
               {showButtons && (
                 <div className={classes.buttonOptions}>
@@ -1230,6 +1422,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
                     </button>;
                   })}
                 </div>
+              )}
+              {teamPlayers.length == 5 && enemyPlayers.length == 5 && (
+                <div className={classes.playersOnRift}>{grid()}</div>
               )}
               {gameFinished && (
                 <button onClick={() => router.push("/")}>
