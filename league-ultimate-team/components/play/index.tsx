@@ -711,10 +711,15 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     );
   };
 
-  const smallLoss = () => {};
+  const smallRisk = () => {};
+
+  const midRisk = () => {};
+
+  const bigRisk = () => {};
 
   useEffect(() => {
     if (gameChoice == -1) return;
+    if (gameChoice == 5) midRisk();
     if (gameChoice == 0) {
       if (
         (eventNumber > -1 && eventNumber < 3) ||
@@ -737,13 +742,14 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       if (
         eventNumber == 1 ||
         eventNumber == 2 ||
-        eventNumber == 3 ||
+        eventNumber == 4 ||
+        eventNumber == 6 ||
         eventNumber == 7 ||
         eventNumber == 8
       ) {
         midRisk();
       } else {
-        midWin;
+        bigRisk();
       }
     }
   }, [gameChoice]);
