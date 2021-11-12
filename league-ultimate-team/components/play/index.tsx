@@ -444,8 +444,21 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     setEventNumber(8);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
-    if (isEnemyEvent)
-      setShowButtons(["Keep in your lane", "Try to steal drake"]);
+    if (isEnemyEvent) {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons(["Force teamfight", "Back off and attempt to steal the soul drake"]);
+          addToTopText(
+            `The enemy team has has begun taking down the Elemental soul Drake! 
+            This could be disastrous if it falls into their hands. Will you rely on your team's
+            cohesion in an all-out 5v5 brawl? Or will you entrust the fate of the game to ${players[1].Player}
+            by attempting a Smite steal?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+      startEvent();
+    }
     else setShowButtons(["Back for items", "Go for turrets"]);
     /* if enemy team is doing it, you have choice to flash in with jungler to try and steal
     can eitehr steal, fail steal and live, or die, which is win, small loss, or big loss
