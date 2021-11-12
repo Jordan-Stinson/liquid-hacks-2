@@ -1,0 +1,56 @@
+.container {
+  background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)),
+    url("../../public/images/victoryScreen.png");
+  background-repeat: no-repeat;
+  background-size: 100% !important;
+  background-attachment: fixed !important;
+  background-position: center top !important;
+  width: 100vw;
+  height: 100vh;
+  .container2 {
+    background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)),
+      url("../../public/images/defeatScreen.png");
+    background-repeat: no-repeat;
+    background-size: 100% !important;
+    background-attachment: fixed !important;
+    background-position: center top !important;
+    width: 100vw;
+    height: 100vh;
+    .container3 {
+      background: linear-gradient(
+          rgba(255, 255, 255, 0),
+          rgba(255, 255, 255, 0)
+        ),
+        url("../../public/images/rift.jpg");
+      background-repeat: no-repeat;
+      background-size: 100% !important;
+      background-attachment: fixed !important;
+      background-position: center top !important;
+      width: 100vw;
+      height: 100vh;
+      .container4 {
+        background: linear-gradient(
+            rgba(255, 255, 255, 0),
+            rgba(255, 255, 255, 0)
+          ),
+          url("../../public/images/roles.jpg");
+        background-repeat: no-repeat;
+        background-size: 100% !important;
+        background-attachment: fixed !important;
+        background-position: center top !important;
+        width: 100vw;
+        height: 100vh;
+        .mask {
+          background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0));
+
+          background-repeat: no-repeat;
+          background-size: 100% !important;
+          background-attachment: fixed !important;
+          background-position: center top !important;
+          width: 100vw;
+          height: 100vh;
+        }
+      }
+    }
+  }
+}

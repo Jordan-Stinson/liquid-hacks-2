@@ -4,8 +4,6 @@ import LandingPage from "../components/landing-page";
 import path from "path";
 import useSWR from "swr";
 
-export interface GetStaticProps {}
-
 const Home: NextPage = () => {
   const fetcher = (url: string) =>
     fetch(url).then((res) => {
