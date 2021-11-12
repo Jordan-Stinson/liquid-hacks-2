@@ -50,19 +50,24 @@
           width: 100vw;
           height: 100vh;
           .topText {
+            z-index: 1;
             position: fixed;
-            width: 100%;
+
             display: flex;
+            align-items: center;
             justify-content: center;
-            padding-top: 15vh;
+            margin-top: 15vh;
+            width: 100%;
+
             color: gold;
             font-size: xx-large;
+            background-color: rgba(0, 0, 0, 0.5);
           }
           .roleSelect {
+            padding-top: 300px;
             width: 100%;
             display: flex;
             justify-content: space-around;
-            padding-top: 15vh;
             .fivePlayerContainer {
               width: 100%;
               display: flex;
@@ -70,6 +75,35 @@
             }
             .playerCard {
               padding: 0;
+            }
+          }
+          .playersOnRift {
+            .wrapper {
+              display: flex;
+              flex-direction: column-reverse;
+              justify-content: space-around;
+              padding-top: 40px;
+              margin-left: 440px;
+              margin-right: 300px;
+              .row {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+                height: 102px;
+              }
+            }
+          }
+          .buttonOptions {
+            z-index: 1;
+            position: fixed;
+            bottom: 10vw;
+            left: 50vw;
+            margin-left: 40px;
+            .buttonop {
+              background: black;
+              color: gold;
+              margin-right: 40px;
+              font-size: x-large;
             }
           }
         }

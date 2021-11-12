@@ -98,61 +98,31 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     }
   }
 
-  async function playerSelect2(role: string) {
-    let tPlayers: IPlayerData[] = [];
-
-    let speed = 100;
-
+  async function playerSelect2() {
     async function callbackFunction() {
-      let newPlayer: IPlayerData;
-
-      postData("/api/player", { role: role }).then((data) => {
-        newPlayer = { ...data };
-        let dupe = false;
-        if (teamPlayers[0].Player == newPlayer.Player) dupe = true;
-
-        if (!dupe && tPlayers.length < 5) tPlayers.push(newPlayer);
-        if (tPlayers.length < 1 || players.length < 1) {
-          setTimeout(callbackFunction, speed);
-        } else {
-          if (role == "TOP") {
-            const existing = [...enemyPlayers];
-            existing[0] = tPlayers[0];
-            setPlayers(existing);
-          }
-          if (role == "JG") {
-            const existing = [...enemyPlayers];
-            existing[1] = tPlayers[0];
-            setPlayers(existing);
-          }
-          if (role == "MID") {
-            const existing = [...enemyPlayers];
-            existing[2] = tPlayers[0];
-            setPlayers(existing);
-          }
-          if (role == "ADC") {
-            const existing = [...enemyPlayers];
-            existing[3] = tPlayers[0];
-            setPlayers(existing);
-          }
-          if (role == "SUP") {
-            const existing = [...enemyPlayers];
-            existing[4] = tPlayers[0];
-            setPlayers(existing);
-          }
-        }
+      const players: IPlayerData[] = [];
+      postData("/api/player", { role: "TOP" }).then((data) => {
+        players[0] = data;
       });
+      postData("/api/player", { role: "JG" }).then((data) => {
+        players[1] = data;
+      });
+      postData("/api/player", { role: "MID" }).then((data) => {
+        players[2] = data;
+      });
+      postData("/api/player", { role: "ADC" }).then((data) => {
+        players[3] = data;
+      });
+      postData("/api/player", { role: "SUP" }).then((data) => {
+        players[4] = data;
+      });
+      setEnemyPlayers(players);
     }
     callbackFunction();
   }
 
   const createEnemyTeam = async () => {
-    console.log("here");
-    playerSelect2("TOP");
-    playerSelect2("JG");
-    playerSelect2("MID");
-    playerSelect2("ADC");
-    playerSelect2("SUP");
+    playerSelect2();
   };
 
   const start = (callback: (word: string) => void): void => {
@@ -168,8 +138,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             );
             setTimeout(() => {
               setRoleSelect(roleSelect + 1);
-            }, 6500);
-          }, 6000);
+            }, 3000);
+          }, 3000);
         }, 6000);
       }, 5500);
     }, 1000);
@@ -216,7 +186,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       setTimeout(() => {
         customMask1(0);
         setTimeout(() => {
-          addToTopText(`The A.I. has chosen the following team.`);
+          addToTopText(`The A.I. is currently choosing their team.`);
           setTimeout(() => {
             createEnemyTeam();
             setTimeout(() => {
@@ -226,13 +196,14 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
                 setGameStage(1);
               }, 6500);
             }, 6000);
-          }, 6000);
+          }, 1000);
         }, 4000);
       }, 8000);
     }, 0);
   };
 
   const handle1v1 = (stage: number): void => {
+    console.log("in 1v1");
     setEventNumber(1);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
     const roleTo1v1 = Math.floor(Math.random() * 5);
@@ -241,7 +212,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       enemyPlayers[roleTo1v1],
     ];
     setEventPlayers([[players[0]], [players[1]]]);
-    
 
     if (isEnemyEvent) {
       const startEvent = (): void => {
@@ -282,10 +252,12 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handle2v2 = (stage: number): void => {
+    console.log("in 2v2");
+
     setEventNumber(2);
     const rolesTo2v2 = [
       Math.floor(Math.random() * 2),
-      Math.floor(Math.random() * 2) + 2
+      Math.floor(Math.random() * 2) + 2,
     ];
 
     const players: IPlayerData[][] = [
@@ -293,20 +265,19 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       [enemyPlayers[rolesTo2v2[0]], enemyPlayers[rolesTo2v2[1]]],
     ];
     setEventPlayers([
-      [players[0][0]],
-      [players[0][1]],
-      [players[1][1]],
-      [players[1][1]],
+      [players[0][0], players[0][1]],
+      [players[1][1], players[1][1]],
     ]);
-    
+
     const isEnemyEngage = [Math.floor(Math.random() * 2)];
     if (isEnemyEngage) {
       const startEvent = (): void => {
         setTimeout(() => {
           setShowButtons(["Back Off", "Engage"]);
           addToTopText(
-            `${players[0][0].Player} and ${players[0][1].Player} 
-            on your team are teaming up to clear vision when they run into 
+            `${players[0][0].Player} and ${
+              players[0][1].Player
+            } on your team are teaming up to clear vision when they run into 
             ${players[1][0].Player} and ${players[1][1].Player}. 
             Both ${players[0][0].Player} and ${players[1][0].Player} 
             are level ${Math.floor(Math.random() * 3 + stage * 2 + 1)}, 
@@ -355,10 +326,22 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     setShowButtons(["Back Off", "Engage"]);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
-    const players: IPlayerData[] = [teamPlayers[0], teamPlayers[1], teamPlayers[2], teamPlayers[3], teamPlayers[4],
-                                    enemyPlayers[0], enemyPlayers[1], enemyPlayers[2], enemyPlayers[3], enemyPlayers[4]];
-    setEventPlayers([[players[0]], [players[1]], [players[2]], [players[3]], [players[4]],
-                     [players[5]], [players[6]], [players[7]], [players[8]], [players[9]]]);
+    const players: IPlayerData[] = [
+      teamPlayers[0],
+      teamPlayers[1],
+      teamPlayers[2],
+      teamPlayers[3],
+      teamPlayers[4],
+      enemyPlayers[0],
+      enemyPlayers[1],
+      enemyPlayers[2],
+      enemyPlayers[3],
+      enemyPlayers[4],
+    ];
+    setEventPlayers([
+      [players[0], players[1], players[2], players[3], players[4]],
+      [players[5], players[6], players[7], players[8], players[9]],
+    ]);
 
     if (isEnemyEvent) {
       const startEvent = (): void => {
@@ -369,7 +352,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             the next objective spawns. As a result of your previous skirmishes, ${players[3].Player}
             has 1 minute left on his Flash cooldown. Suddenly, ${players[4].Player} spots a Teleport 
             channelling on a flank ward in the Wolf pit behind your team. Do you run back towards your
-            mid lane tower, or engage on the enemy team before they can engage on you?`);
+            mid lane tower, or engage on the enemy team before they can engage on you?`
+          );
           setTimeout(() => {}, 8000);
         }, 0);
         startEvent();
@@ -385,7 +369,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             on his R cooldown. There are two flank wards in the enemy jungle, 
             and both ${players[0].Player} and ${players[2].Player} have Teleport available. Do you 
             set up a TP flank and force the engage? Or do you play it slow and wait for all ultimates 
-            to be available?`);
+            to be available?`
+          );
           setTimeout(() => {}, 8000);
         }, 0);
         startEvent();
@@ -400,13 +385,19 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   const handleTopGank = (): void => {
     setEventNumber(4);
-    
+
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
     const players: IPlayerData[] = isEnemyEvent
       ? [teamPlayers[0], enemyPlayers[0], enemyPlayers[1]]
-      : [teamPlayers[0], teamPlayers[1], enemyPlayers[0], enemyPlayers[1], enemyPlayers[2]];
-      
+      : [
+          teamPlayers[0],
+          teamPlayers[1],
+          enemyPlayers[0],
+          enemyPlayers[1],
+          enemyPlayers[2],
+        ];
+
     if (isEnemyEvent) {
       const startEvent = (): void => {
         setTimeout(() => {
@@ -415,7 +406,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             `${players[0].Player} is playing forward, trying to push out his lane
             in order to get a better reset. Suddenly, he spots ${players[2].Player}
             clearing a ward in the top river brush. Should ${players[0].Player} finish
-            clearing the minion wave, or back off immediately?`);
+            clearing the minion wave, or back off immediately?`
+          );
           setTimeout(() => {}, 8000);
         }, 0);
         startEvent();
@@ -429,7 +421,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             are 30% HP. ${players[1].Player} is currently in the top river, and begins 
             pathing towards top lane. However, both ${players[3].Player} and ${players[4].Player} 
             are missing, and haven't been spotted on any wards in quite some time. Should 
-            ${players[1].Player} gank top lane, or go back to clearing his camps?`);
+            ${players[1].Player} gank top lane, or go back to clearing his camps?`
+          );
           setTimeout(() => {}, 8000);
         }, 0);
         startEvent();
@@ -473,10 +466,13 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       [players[9]],
     ]);
 
-    if (isEnemyEvent)  {
+    if (isEnemyEvent) {
       const startEvent = (): void => {
         setTimeout(() => {
-          setShowButtons(["Bring up your team and look for a fight", "Back off and leave your players to farm"]);
+          setShowButtons([
+            "Bring up your team and look for a fight",
+            "Back off and leave your players to farm",
+          ]);
           addToTopText(
             `The enemy team is positioned to take down the Rift Herald! They've rotated their laners around and
             seem to be committed to this objective. In the right hands, the Rift Herald can help break down a lane.
@@ -489,7 +485,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     } else {
       const startEvent = (): void => {
         setTimeout(() => {
-          setShowButtons(["Defend your position and prepare for a teamfight", "Leave your jungler to take the objective and farm instead."]);
+          setShowButtons([
+            "Defend your position and prepare for a teamfight",
+            "Leave your jungler to take the objective and farm instead.",
+          ]);
           addToTopText(
             `The Rift Herald is an important early and mid game objective. Your team recognizes this, and through temporary
             laning priority gains, you see the opportunity to secure this objective. You start it off, and notice that the
@@ -501,28 +500,43 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         }, 0);
       };
       startEvent();
-    /* top+mid of either team goes to fight it
+      /* top+mid of either team goes to fight it
     no interaction. just calc and display which team gets it
     */
+    }
   };
+
   const handleBotGank = (): void => {
     setEventNumber(6);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
     const players: IPlayerData[] = isEnemyEvent
-      ? [teamPlayers[3], teamPlayers[4], enemyPlayers[3], enemyPlayers[4], enemyPlayers[2]]
-      : [teamPlayers[2], teamPlayers[3], teamPlayers[4], enemyPlayers[3], enemyPlayers[4]];
-      
+      ? [
+          teamPlayers[3],
+          teamPlayers[4],
+          enemyPlayers[3],
+          enemyPlayers[4],
+          enemyPlayers[2],
+        ]
+      : [
+          teamPlayers[2],
+          teamPlayers[3],
+          teamPlayers[4],
+          enemyPlayers[3],
+          enemyPlayers[4],
+        ];
+
     if (isEnemyEvent) {
       const startEvent = (): void => {
         setTimeout(() => {
           setShowButtons(["Clear the wave", "Back off"]);
           addToTopText(
-            `${players[0].Player} and ${players[1].Player} are playing forward, trying to 
-            push their lane out in order to get a better reset. Suddenly, they spot 
-            ${players[4].Player} clearing a ward in the bottom river brush. Should 
-            ${players[0].Player} and ${players[1].Player} finish clearing the minion wave, 
-            or back off immediately?`);
+            `${players[0].Player} and ${players[1].Player} are playing forward, trying to
+              push their lane out in order to get a better reset. Suddenly, they spot
+              ${players[4].Player} clearing a ward in the bottom river brush. Should
+              ${players[0].Player} and ${players[1].Player} finish clearing the minion wave,
+              or back off immediately?`
+          );
           setTimeout(() => {}, 8000);
         }, 0);
         startEvent();
@@ -532,23 +546,24 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         setTimeout(() => {
           setShowButtons(["Gank top lane", "Clear camps"]);
           addToTopText(
-            `After some heavy trading, both botlanes are 40% HP. ${players[0].Player} is currently 
-            in the bottom river, and begins pathing towards bot lane. However, both ${players[3].Player} 
-            and ${players[4].Player} are missing, and haven't been spotted on any wards in quite
-            some time. Should ${players[0].Player} gank bottom lane, or go back to clearing his camps?`);
+            `After some heavy trading, both botlanes are 40% HP. ${players[0].Player} is currently
+              in the bottom river, and begins pathing towards bot lane. However, both ${players[3].Player}
+              and ${players[4].Player} are missing, and haven't been spotted on any wards in quite
+              some time. Should ${players[0].Player} gank bottom lane, or go back to clearing his camps?`
+          );
           setTimeout(() => {}, 8000);
         }, 0);
         startEvent();
       };
     }
-
-    // {if your gank} you notice your jungler has been warding his way down through the river, and is now close enough for a gank
-    // do you tell him to try and pinsir attack the bottom laner from behind, or do you lure the enemy up towards the river
-    // you gain points if you kill, enemy cant get points
-    // {if enemy gank} your teammate pings the map, letting you know the enemy jungler is missing. do you continue to push the wave
-    // or do you play it safe.
-    //enemy can get points if you die,
   };
+
+  // {if your gank} you notice your jungler has been warding his way down through the river, and is now close enough for a gank
+  // do you tell him to try and pinsir attack the bottom laner from behind, or do you lure the enemy up towards the river
+  // you gain points if you kill, enemy cant get points
+  // {if enemy gank} your teammate pings the map, letting you know the enemy jungler is missing. do you continue to push the wave
+  // or do you play it safe.
+  //enemy can get points if you die,
 
   const handleDrake = (): void => {
     setEventNumber(7);
@@ -582,7 +597,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     if (isEnemyEvent)  {
       const startEvent = (): void => {
         setTimeout(() => {
-          setShowButtons(["Force teamfight", "Back off and attempt to steal drake"]);
+          setShowButtons([
+            "Force teamfight",
+            "Back off and attempt to steal drake",
+          ]);
           addToTopText(
             `The enemy team has secured control of the river, and has begun
             burning down the Infernal Drake. Your team spots ${players[5].Player} on a ward
@@ -597,7 +615,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     } else {
       const startEvent = (): void => {
         setTimeout(() => {
-          setShowButtons(["Attempt to burst down the dragon", "Force teamfight with enemy"]);
+          setShowButtons([
+            "Attempt to burst down the dragon",
+            "Force teamfight with enemy",
+          ]);
           addToTopText(
             `Through superior macro play, you've gained control of the bottom-side river and started
             whittling down the elemental drake. ${players[5].Player} is clearing a minion wave in the top lane,
@@ -649,7 +670,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     if (isEnemyEvent) {
       const startEvent = (): void => {
         setTimeout(() => {
-          setShowButtons(["Force teamfight", "Back off and attempt to steal the soul drake"]);
+          setShowButtons([
+            "Force teamfight",
+            "Back off and attempt to steal the soul drake",
+          ]);
           addToTopText(
             `The enemy team has has begun taking down the Elemental soul Drake! 
             This could be disastrous if it falls into their hands. Will you rely on your team's
@@ -660,11 +684,13 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         }, 0);
       };
       startEvent();
-    }
-    else {
+    } else {
       const startEvent = (): void => {
         setTimeout(() => {
-          setShowButtons(["Attempt to burst down the dragon", "Force teamfight with enemy"]);
+          setShowButtons([
+            "Attempt to burst down the dragon",
+            "Force teamfight with enemy",
+          ]);
           addToTopText(
             `You find yourselves with control over the bottom river as the Elemental soul dragon spawns!
             However, you know that the enemy team will not give this one up. Your suspicions are confirmed as
@@ -699,16 +725,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       enemyPlayers[4],
     ];
     setEventPlayers([
-      [players[0]],
-      [players[1]],
-      [players[2]],
-      [players[3]],
-      [players[4]],
-      [players[5]],
-      [players[6]],
-      [players[7]],
-      [players[8]],
-      [players[9]],
+      [players[0], players[1], players[2], players[3], players[4]],
+      [players[5], players[6], players[7], players[8], players[9]],
     ]);
     if (isEnemyElder) {
       const startEvent = (): void => {
@@ -752,11 +770,34 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     */
   };
 
+  useEffect(() => {
+    const newEnemyPlayers = [];
+    for (let i = 0; i < enemyPlayers.length; i++) {
+      switch (enemyPlayers[i].Position) {
+        case "TOP":
+          newEnemyPlayers[0] = enemyPlayers[i];
+          break;
+        case "JG":
+          newEnemyPlayers[1] = enemyPlayers[i];
+          break;
+        case "MID":
+          newEnemyPlayers[2] = enemyPlayers[i];
+          break;
+        case "ADC":
+          newEnemyPlayers[3] = enemyPlayers[i];
+          break;
+        case "SUP":
+          newEnemyPlayers[4] = enemyPlayers[i];
+          break;
+      }
+    }
+  }, [enemyPlayers]);
+
   const handleBackdoor = (): void => {
     setEventNumber(10);
     const players: IPlayerData[] = [teamPlayers[0], teamPlayers[2]]; // Always top laner and mid laner
     setEventPlayers([[players[0]], [players[1]]]);
-    
+
     const startEvent = (): void => {
       setTimeout(() => {
         setShowButtons(["Keep Scaling", "Go for the Backdoor"]);
@@ -798,16 +839,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       enemyPlayers[4],
     ];
     setEventPlayers([
-      [players[0]],
-      [players[1]],
-      [players[2]],
-      [players[3]],
-      [players[4]],
-      [players[5]],
-      [players[6]],
-      [players[7]],
-      [players[8]],
-      [players[9]],
+      [players[0], players[1], players[2], players[3], players[4]],
+      [players[5], players[6], players[7], players[8], players[9]],
     ]);
 
     if (isEnemyBaron) {
@@ -877,6 +910,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     }
     if (stage == 3) {
       while (events.length) {
+        console.log(events[0], event);
         if (events[0] == 1) {
           events.pop();
           handle2v2(stage);
@@ -1032,74 +1066,41 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   useEffect(() => {
+    console.log(gameStage, "starting gmae stage");
     if (gameStage == 1) {
       const numOfEvents = Math.floor(Math.random() * (3 - 0) + 0);
-      const eventArray = [];
-      for (let i = 0; i < r1po.length; i++) {
-        let odd = r1po[i] * 100;
-        for (let j = 0; j < odd; j++) {
-          eventArray.push(i + 1);
-        }
-      }
       let events = [];
       while (events.length != numOfEvents) {
-        events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
+        events.push(Math.floor(Math.random() * r1po.length + 1));
       }
-      handleEvents(1, events);
+      if (events.length) handleEvents(1, events);
+      else setGameStage(gameStage + 1);
     } else if (gameStage == 2) {
       const numOfEvents = Math.floor(Math.random() * (3 - 1) + 1);
-      const eventArray = [];
-      for (let i = 0; i < r2po.length; i++) {
-        let odd = r2po[i] * 100;
-        for (let j = 0; j < odd; j++) {
-          eventArray.push(i + 1);
-        }
-      }
       let events = [];
       while (events.length != numOfEvents) {
-        events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
+        events.push(Math.floor(Math.random() * r2po.length + 1));
       }
       handleEvents(2, events);
     } else if (gameStage == 3) {
       const numOfEvents = Math.floor(Math.random() * (4 - 1) + 1);
-      const eventArray = [];
-      for (let i = 0; i < r3po.length; i++) {
-        let odd = r3po[i] * 100;
-        for (let j = 0; j < odd; j++) {
-          eventArray.push(i + 1);
-        }
-      }
       let events = [];
       while (events.length != numOfEvents) {
-        events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
+        events.push(Math.floor(Math.random() * r3po.length + 1));
       }
       handleEvents(3, events);
     } else if (gameStage == 4) {
       const numOfEvents = Math.floor(Math.random() * (4 - 2) + 2);
-      const eventArray = [];
-      for (let i = 0; i < r4po.length; i++) {
-        let odd = r4po[i] * 100;
-        for (let j = 0; j < odd; j++) {
-          eventArray.push(i + 1);
-        }
-      }
       let events = [];
       while (events.length != numOfEvents) {
-        events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
+        events.push(Math.floor(Math.random() * r4po.length + 1));
       }
       handleEvents(4, events);
     } else if (gameStage == 5) {
       const numOfEvents = 3;
-      const eventArray = [];
-      for (let i = 0; i < r5po.length; i++) {
-        let odd = r5po[i] * 100;
-        for (let j = 0; j < odd; j++) {
-          eventArray.push(i + 1);
-        }
-      }
       let events = [];
       while (events.length != numOfEvents) {
-        events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
+        events.push(Math.floor(Math.random() * r5po.length + 1));
       }
       handleEvents(5, events);
     }
@@ -1108,26 +1109,12 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   async function playerSelect(role: string) {
     let tPlayers: IPlayerData[] = [];
 
-    let speed = 500;
-
     async function callbackFunction() {
-      let newPlayer: IPlayerData;
-
-      postData("/api/player", { role: role }).then((data) => {
-        newPlayer = { ...data };
-        let dupe = false;
-        for (let i = 0; i < tPlayers.length; i++) {
-          if (tPlayers[i].Player == newPlayer.Player) dupe = true;
-        }
-        if (!dupe && tPlayers.length < 5) tPlayers.push(newPlayer);
-        if (tPlayers.length < 5 && players.length < 5) {
-          setTimeout(callbackFunction, speed);
-        } else {
-          if (players.length != 5) setPlayers(tPlayers);
-        }
+      postData("/api/fivePlayers", { role: role }).then((data) => {
+        if (players.length != 5) setPlayers(data);
       });
     }
-    callbackFunction();
+    if (players.length != 5) callbackFunction();
   }
 
   const roleSelector = (): ReactElement => {
@@ -1220,6 +1207,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handleEventEnd = (playerWon: boolean) => {
+    console.log(eventPlayers);
     if (playerWon) {
       switch (eventNumber) {
         case 1:
@@ -1378,7 +1366,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   useEffect(() => {
     if (gameChoice == -1) return;
-    if (gameChoice == 5) midRisk();
+    if (gameChoice == 5) {
+      setGameStage(gameStage + 1);
+      midRisk();
+    }
     if (gameChoice == 0) {
       if (
         (eventNumber > -1 && eventNumber < 3) ||
@@ -1386,6 +1377,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         eventNumber == 6 ||
         eventNumber == 10
       ) {
+        setGameStage(gameStage + 1);
+
         return;
       } else if (
         eventNumber == 3 ||
@@ -1394,6 +1387,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         eventNumber == 9 ||
         eventNumber == 11
       ) {
+        setGameStage(gameStage + 1);
+
         smallRisk();
       }
     }
@@ -1406,8 +1401,12 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         eventNumber == 7 ||
         eventNumber == 8
       ) {
+        setGameStage(gameStage + 1);
+
         midRisk();
       } else {
+        setGameStage(gameStage + 1);
+
         bigRisk();
       }
     }
@@ -1425,46 +1424,83 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       )}.png`)
     );
     return (
-      <div>
+      <div className={classes.wrapper}>
         <div className={classes.row}>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
           <div className={classes.column}>
             {" "}
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
             <Image
               src={teamPlayerCards[3]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
           <div className={classes.column}>
-            {" "}
             <Image
               src={teamPlayerCards[4]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
+          <div className={classes.column}> </div>
+          <div className={classes.column}> </div>
+          <div className={classes.column}> </div>
         </div>
         <div className={classes.row}>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
+          <div className={classes.column}>
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div> </div>
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div> </div>
+          </div>
+          <div className={classes.column}>
+            <div> </div>{" "}
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div> </div>
+          </div>
+          <div className={classes.column}>
+            <div> </div>{" "}
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div> </div>
+          </div>
+          <div className={classes.column}>
+            <div> </div>
+          </div>
         </div>
         <div className={classes.row}>
           <div className={classes.column}></div>
@@ -1480,8 +1516,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             {" "}
             <Image
               src={enemyPlayerCards[4]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
@@ -1494,8 +1530,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             {" "}
             <Image
               src={teamPlayerCards[2]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
@@ -1504,15 +1540,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           <div className={classes.column}></div>
           <div className={classes.column}></div>
           <div className={classes.column}></div>
-          <div className={classes.column}>
-            {" "}
-            <Image
-              src={enemyPlayerCards[3]}
-              width={200}
-              height={300}
-              layout={"fixed"}
-            />
-          </div>
+          <div className={classes.column}> </div>
         </div>
         <div className={classes.row}>
           <div className={classes.column}></div>
@@ -1520,8 +1548,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             {" "}
             <Image
               src={teamPlayerCards[1]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
@@ -1532,15 +1560,23 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             {" "}
             <Image
               src={enemyPlayerCards[2]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
           <div className={classes.column}></div>
           <div className={classes.column}></div>
           <div className={classes.column}></div>
-          <div className={classes.column}></div>
+          <div className={classes.column}>
+            {" "}
+            <Image
+              src={enemyPlayerCards[3]}
+              width={140}
+              height={210}
+              layout={"fixed"}
+            />
+          </div>
         </div>
         <div className={classes.row}>
           <div className={classes.column}></div>
@@ -1559,8 +1595,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             {" "}
             <Image
               src={teamPlayerCards[0]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
@@ -1571,8 +1607,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             {" "}
             <Image
               src={enemyPlayerCards[1]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
@@ -1589,8 +1625,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             {" "}
             <Image
               src={enemyPlayerCards[0]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
@@ -1615,7 +1651,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       startGame((text) => console.log(text));
     }
   }, [roleSelect]);
-  console.log(teamPlayers, enemyPlayers);
+  console.log(showButtons, showButtons.length);
   return (
     <div className={classes.container} data-win>
       <div className={classes.container2} data-loss>
@@ -1624,16 +1660,26 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             <div className={classes.mask} data-mask>
               <div className={classes.topText} data-top-text></div>
 
-              <div className={classes.roleSelect}>{roleSelector()}</div>
+              {roleSelect != 6 && (
+                <div className={classes.roleSelect}>{roleSelector()}</div>
+              )}
 
-              {showButtons && (
+              {showButtons.length && (
                 <div className={classes.buttonOptions}>
                   {showButtons.map((text, index) => {
-                    <button onClick={() => setGameChoice(index)}>
-                      <div>
-                        <span>{text}</span>
-                      </div>
-                    </button>;
+                    return (
+                      <button
+                        onClick={() => {
+                          setGameChoice(index);
+                          setShowButtons([]);
+                        }}
+                        className={classes.buttonop}
+                      >
+                        <div>
+                          <span>{text}</span>
+                        </div>
+                      </button>
+                    );
                   })}
                 </div>
               )}
