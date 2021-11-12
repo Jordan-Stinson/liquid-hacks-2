@@ -5,6 +5,7 @@ import LoLIcon from "../../public/images/lol-icon.png";
 import { compileFunction } from "vm";
 import { IPlayerData } from "../../constants/player.interfaces";
 import { useRouter } from "next/router";
+import { callbackify } from "util";
 
 export interface PickProps {}
 
@@ -24,6 +25,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   const [gameStage, setGameStage] = useState<number>(0);
   const [playerPoints, setPlayerPoints] = useState(0);
   const [enemyPoints, setEnemyPoints] = useState(0);
+  const [showButtons, setShowButtons] = useState<string[]>([]);
+  const [eventPlayers, setEventPlayers] = useState<IPlayerData[][]>([]);
+  const [gameChoice, setGameChoice] = useState<number>(-1);
+  const [eventNumber, setEventNumber] = useState<number>(-1);
 
   useEffect(() => {
     const background = document.querySelector(
@@ -58,6 +63,18 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     callbackFunction();
   }
 
+  async function removeTopText() {
+    const words = document.querySelector(
+      "div[data-top-text]"
+    ) as unknown as HTMLDivElement;
+
+    let speed = 75;
+    if (words.innerHTML.length) {
+      words.innerHTML = words.innerHTML.slice(0, -1);
+      setTimeout(removeTopText, speed);
+    }
+  }
+
   const createEnemyTeam = (): void => {
     let ep = [];
     while (ep.length != 1) {
@@ -68,6 +85,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
       if (!dupe) ep.push(newPlayer);
     }
+    //@ts-ignore
     while (ep.length != 2) {
       let newPlayer: IPlayerData = getPlayerFromAPI("TOP");
       let dupe = false;
@@ -103,17 +121,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     setEnemyPlayers(ep);
   };
 
-  async function removeTopText() {
-    const words = document.querySelector(
-      "div[data-top-text]"
-    ) as unknown as HTMLDivElement;
-
-    let speed = 75;
-    if (words.innerHTML.length) {
-      words.innerHTML = words.innerHTML.slice(0, -1);
-      setTimeout(removeTopText, speed);
-    }
-  }
   const start = (callback: (word: string) => void): void => {
     setTimeout(() => {
       addToTopText("Welcome to League of Legends: Ultimate Team!");
@@ -192,29 +199,70 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handle1v1 = (stage: number): void => {
+    setEventNumber(1);
+
     const roleTo1v1 = Math.floor(Math.random() * 5);
     const players: IPlayerData[] = [
       teamPlayers[roleTo1v1],
       enemyPlayers[roleTo1v1],
     ];
+    setEventPlayers([[players[0]], [players[1]]]);
+    setShowButtons(["Back Off", "Engage"]);
+
+    const isEnemyEngage = [Math.floor(Math.random() * 2)];
+    if (isEnemyEngage) {
+      const startEvent = (callback: (word: string) => void): void => {
+        setTimeout(() => {
+          addToTopText(`${players[0].player} and ${
+            players[1].player
+          } come face to face in a 1v1. Both champions are level ${
+            Math.random() * (5 - 1) + 1 + stage * 5
+          } and trade auto 
+          attacks. Then, ${
+            players[1].player
+          } starts to engage. Do you back off, or stand your ground?`);
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+    } else {
+      const startEvent = (callback: (word: string) => void): void => {
+        setTimeout(() => {
+          addToTopText(`${players[0].player} and ${
+            players[1].player
+          } come face to face in a 1v1. Both champions are level ${
+            Math.random() * (5 - 1) + 1 + stage * 5
+          } and trade auto 
+          attacks. Then, ${
+            players[0].player
+          } starts to engage. Do you continue engaging?`);
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+    }
     //player1 and player2 come face to face. both are level {5*(stage-1) + 1-5} and trade autos, before {either player} decides
     //to start engaging. {if you are the one engaging, do you continue to engage} {if they engaged, do you take the fight or leave}
     //you win the fight if you roll a higher number, you lose if they roll a higher number, no one wins if you choose to disengage
   };
 
   const handle2v2 = (stage: number): void => {
+    setEventNumber(2);
     const rolesTo2v2 = [Math.floor(Math.random() * 5)];
 
     const players: IPlayerData[][] = [
       [teamPlayers[rolesTo2v2[0]], teamPlayers[rolesTo2v2[1]]],
       [enemyPlayers[rolesTo2v2[0]], enemyPlayers[rolesTo2v2[1]]],
     ];
+    setShowButtons(["Back Off", "Engage"]);
+
     //player1 and player2 on your team are teaming up when they run into enemy1 and enemy2. player1 and enemy1 are level {5*(stage-1) + 1-5 1-5} and player2 and enemy 2 are leve X.
     // after trading abilities and using a health potion,  {either player} calls out to their teammate that this is the best chance they will get for a double kill
     // should your team go all in to try and get the kills? optional fight
   };
 
   const handle5v5 = (): void => {
+    setEventNumber(3);
+    setShowButtons(["Back Off", "Engage"]);
+
     // {all players meet mid} {one team heads towards baron and gets surrounded} {one team starts drake but then other team appears}.
     // your team calls out that they are ready to fight now, but you have to decide whether its worth the risk. you know that if you lose the teamfight,
     //it will be hard to comeback, but not taking the teamfight means the other team will likely get an objective
@@ -222,16 +270,20 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handleTopGank = (): void => {
+    setEventNumber(4);
     const rolesTo2v2 = [Math.floor(Math.random() * 5)];
-    const isEnemyGank = [Math.floor(Math.random() * 2)];
 
     while (rolesTo2v2.length != 2) {
       let temp = Math.floor(Math.random() * 5);
       if (temp != rolesTo2v2[0]) rolesTo2v2.push(temp);
     }
+    const isEnemyGank = [Math.floor(Math.random() * 2)];
+
     const players: IPlayerData[] = isEnemyGank
       ? [teamPlayers[1], enemyPlayers[1], enemyPlayers[0]]
       : [teamPlayers[1], enemyPlayers[1], teamPlayers[0]];
+    if (isEnemyGank) setShowButtons(["Back Off", "Stay in your lane"]);
+    else setShowButtons(["Go Through River", "Go Around Back"]);
 
     // {if your gank} you notice your jungler has been warding his way up through the river, and is now close enough for a gank
     // do you tell him to try and pinsir attack the other top laner from behind, or join you up front for a full assault
@@ -242,11 +294,19 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handleRiftHerald = (): void => {
+    const isEnemyRift = [Math.floor(Math.random() * 2)];
+
+    setEventNumber(5);
     /* top+mid of either team goes to fight it
     no interaction. just calc and display which team gets it
     */
   };
   const handleBotGank = (): void => {
+    setEventNumber(6);
+    const isEnemyGank = [Math.floor(Math.random() * 2)];
+    if (isEnemyGank) setShowButtons(["Back Off", "Stay in your lane"]);
+    else setShowButtons(["Go Through River", "Go Around Back"]);
+
     // {if your gank} you notice your jungler has been warding his way down through the river, and is now close enough for a gank
     // do you tell him to try and pinsir attack the bottom laner from behind, or do you lure the enemy up towards the river
     // you gain points if you kill, enemy cant get points
@@ -256,12 +316,24 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handleDrake = (): void => {
+    setEventNumber(7);
+    const isEnemyGank = [Math.floor(Math.random() * 2)];
+
+    if (isEnemyGank)
+      setShowButtons(["Keep in your lane", "Try to steal drake"]);
+    else setShowButtons(["Back for items", "Go for turrets"]);
     /* if enemy team is doing it, you have choice to flash in with jungler to try and steal
-    can eitehr steal, fail steal and live, or die, which is win, small loss, or big loss
+    can either steal, fail steal and live, or die, which is win, small loss, or big loss
     if your team is doing it, choice of whether to back for items (small point gain) or look for fights (can trigger any xvx fight)
     */
   };
   const handleSoulDrake = (): void => {
+    setEventNumber(8);
+    const isEnemyGank = [Math.floor(Math.random() * 2)];
+
+    if (isEnemyGank)
+      setShowButtons(["Keep in your lane", "Try to steal drake"]);
+    else setShowButtons(["Back for items", "Go for turrets"]);
     /* if enemy team is doing it, you have choice to flash in with jungler to try and steal
     can eitehr steal, fail steal and live, or die, which is win, small loss, or big loss
     if your team is doing it, choice of whether to back for items (small point gain) or look for fights (can trigger any xvx fight)
@@ -269,18 +341,33 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handleElderDrake = (): void => {
+    setEventNumber(9);
+    const isEnemyGank = [Math.floor(Math.random() * 2)];
+
+    if (isEnemyGank)
+      setShowButtons(["Keep in your lane", "Try to steal drake"]);
+    else setShowButtons(["Back for items", "Go for turrets"]);
     /* if enemy team is doing it, you have choice to flash in with jungler to try and steal
-    can eitehr steal, fail steal and live, or die, which is win, small loss, or big loss
+    can either steal, fail steal and live, or die, which is win, small loss, or big loss
     if your team is doing it, choice of whether to go destroy the enemy's turrets or look for fights (can trigger any xvx fight)
     */
   };
 
   const handleBackdoor = (): void => {
+    setEventNumber(10);
+
+    setShowButtons(["Scale for Late Game", "Go for the Backdoor Win"]);
+
     /* one of the players on your team notices the chance for a backdoor play. 
       very risky, but you could win the game off of it, regardless of points difference*/
   };
 
   const handleBaron = (): void => {
+    setEventNumber(11);
+    const isEnemyGank = [Math.floor(Math.random() * 2)];
+
+    if (isEnemyGank) setShowButtons(["Leave", "Teamfight to Steal Baron"]);
+    else setShowButtons(["Go for Turrets", "Go for the Nexus"]);
     /*if you are doing baron, do you continue to do it, and then after do you look for fights or try to destroy turrets
       if enemy doing baren, do you try and push them off, steal baron, or leave*/
   };
@@ -624,9 +711,46 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     );
   };
 
+  const smallLoss = () => {};
+
   useEffect(() => {
-    // start((text) => console.log(text));
-    startGame((text) => console.log(text));
+    if (gameChoice == -1) return;
+    if (gameChoice == 0) {
+      if (
+        (eventNumber > -1 && eventNumber < 3) ||
+        eventNumber == 4 ||
+        eventNumber == 6 ||
+        eventNumber == 10
+      ) {
+        return;
+      } else if (
+        eventNumber == 3 ||
+        eventNumber == 7 ||
+        eventNumber == 8 ||
+        eventNumber == 9 ||
+        eventNumber == 11
+      ) {
+        smallRisk();
+      }
+    }
+    if (gameChoice == 1) {
+      if (
+        eventNumber == 1 ||
+        eventNumber == 2 ||
+        eventNumber == 3 ||
+        eventNumber == 7 ||
+        eventNumber == 8
+      ) {
+        midRisk();
+      } else {
+        midWin;
+      }
+    }
+  }, [gameChoice]);
+
+  useEffect(() => {
+    start((text) => console.log(text));
+    //startGame((text) => console.log(text));
   }, []);
 
   useEffect(() => {
@@ -645,6 +769,17 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
               <div className={classes.roleSelect}>
                 {roleSelector(roleSelect)}
               </div>
+              {showButtons && (
+                <div className={classes.buttonOptions}>
+                  {showButtons.map((text, index) => {
+                    <button onClick={() => setGameChoice(index)}>
+                      <div>
+                        <span>{text}</span>
+                      </div>
+                    </button>;
+                  })}
+                </div>
+              )}
               {gameFinished && (
                 <button onClick={() => router.push("/")}>
                   <div>

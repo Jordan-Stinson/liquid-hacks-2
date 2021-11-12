@@ -49,6 +49,27 @@
           background-position: center top !important;
           width: 100vw;
           height: 100vh;
+          .topText {
+            position: fixed;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding-top: 15vh;
+          }
+          .roleSelect {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding-top: 15vh;
+            .fivePlayerContainer {
+              width: 100%;
+              display: flex;
+              justify-content: space-around;
+            }
+            .playerCard {
+              padding: 0;
+            }
+          }
         }
       }
     }

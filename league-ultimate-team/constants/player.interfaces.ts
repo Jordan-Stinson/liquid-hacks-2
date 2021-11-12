@@ -11,6 +11,7 @@ export interface IPlayerData {
   exp: number;
   ver: number;
   thr: number;
+  overall: number;
 }
 
 export enum RatingBreakpoints {
