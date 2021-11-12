@@ -21,22 +21,6 @@ const LandingPage: FC<LandingPageProps> = ({ playerImages }): ReactElement => {
   const router = useRouter();
   const [offset, setOffset] = useState<number>(0);
 
-  const tempPlayer: IPlayerData = {
-    player: "Alphari",
-    nationality: "Wales",
-    region: "LCS",
-
-    import: true,
-    team: "Team Liquid",
-    position: "TOP",
-    lan: 100,
-    vis: 65,
-    car: 90,
-    exp: 96,
-    ver: 77,
-    thr: 100,
-  };
-
   useEffect(() => {
     const background = document.querySelector(
       "div[data-background]"
@@ -97,16 +81,7 @@ const LandingPage: FC<LandingPageProps> = ({ playerImages }): ReactElement => {
       {/* interesting idea is to show player cards fading in and out */}
       <div className={classes.playerCards}>
         {/* <Image src={FakerCard} width={150} height={200} layout={"fixed"} /> */}
-        {playerImages.map((player, index) => {
-          player = player.replaceAll("\\", "/").slice(7);
-          return (
-            <div className={classes.player} key={player + index}>
-              <Image src={player} width={200} height={300} layout={"fixed"} />
-            </div>
-          );
-        })}
       </div>
-      <PlayerCard player={tempPlayer} />
       <div className={classes.buttonsContainer}>
         <button onClick={() => router.push("/help")} className={classes.button}>
           <div className={classes.helpButton}>
