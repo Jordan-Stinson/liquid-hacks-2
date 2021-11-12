@@ -5,9 +5,6 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 import os
 import time
-from dotenv import load_dotenv 
-from pathlib import Path 
-
 
 def createCards(df, driver, start=0, end=165):
 
@@ -76,12 +73,8 @@ def createCards(df, driver, start=0, end=165):
 
 if __name__ == "__main__":
     # Initialization
-    dotenv_path = Path('../.env.local') 
-    load_dotenv(dotenv_path=dotenv_path)
-    # serv = Service(os.getenv('CHROMEDRIVER_PATH'))
     opt = webdriver.ChromeOptions()
     opt.add_experimental_option('excludeSwitches', ['enable-logging'])
-    # driver = webdriver.Chrome(service=serv, options=opt)
     driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=opt)
     link = 'https://www.fifarosters.com/create-card'
     datasetPath = os.path.join(os.path.dirname(__file__), '../data/mainDataset.csv')
@@ -107,6 +100,6 @@ if __name__ == "__main__":
         textBox.send_keys(statTitles[i])
 
     # Create cards
-    createCards(cardStats, driver, 0, 2)
+    createCards(cardStats, driver, 51)
     time.sleep(3)
     driver.quit()
