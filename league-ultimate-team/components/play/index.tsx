@@ -4,6 +4,7 @@ import Image from "next/image";
 import LoLIcon from "../../public/images/lol-icon.png";
 import { compileFunction } from "vm";
 import { IPlayerData } from "../../constants/player.interfaces";
+import { useRouter } from "next/router";
 
 export interface PickProps {}
 
@@ -14,6 +15,7 @@ const r4po = [5 / 25, 7 / 25, 4 / 25, 8 / 25, 1 / 25];
 const r5po = [44 / 100, 35 / 100, 20 / 100, 1 / 100];
 
 const PlayComponent: FC<PickProps> = ({}): ReactElement => {
+  const router = useRouter();
   const [playersSelected, setPlayersSelected] = useState<boolean>(false);
   const [gameFinished, setGameFinished] = useState<boolean>(false);
   const [roleSelect, setRoleSelect] = useState<number>(0);
@@ -21,7 +23,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   const [enemyPlayers, setEnemyPlayers] = useState<IPlayerData[]>([]);
   const [gameStage, setGameStage] = useState<number>(0);
   const [playerPoints, setPlayerPoints] = useState(0);
-  const [gamePoints, setGamePoints] = useState(0);
+  const [enemyPoints, setEnemyPoints] = useState(0);
 
   useEffect(() => {
     const background = document.querySelector(
@@ -371,7 +373,101 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           handleBackdoor();
         }
       }
+      handleEndofGame();
     }
+  };
+
+  const handleEndofGame = () => {
+    const playerHasWon = playerPoints >= enemyPoints;
+    if (playerHasWon) {
+      fadeToVictory();
+    } else {
+      fadeToLoss();
+    }
+  };
+
+  const fadeToVictory = () => {
+    async function customMaskIn(opacity: number) {
+      const background = document.querySelector(
+        "div[data-mask]"
+      ) as unknown as HTMLDivElement;
+      if (Math.round((opacity + Number.EPSILON) * 100) / 100 != 1) {
+        background.style.background = `linear-gradient(rgba(0, 0, 0, ${
+          opacity + 0.05
+        }), rgba(0, 0, 0, ${opacity + 0.05}))`;
+        setTimeout(() => customMaskIn(opacity + 0.05), 50);
+      } else {
+        const oldBackground = document.querySelector(
+          "div[data-rift]"
+        ) as unknown as HTMLDivElement;
+        oldBackground.style.background = `linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0))`;
+        const oldLossScreen = document.querySelector(
+          "div[data-loss]"
+        ) as unknown as HTMLDivElement;
+        oldLossScreen.style.background = `linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0))`;
+        const teamPlayerCards = document.querySelectorAll(
+          "div[data-player-card]"
+        );
+        //move player cards
+        setGameFinished(true);
+
+        setTimeout(() => customMaskOut(1), 1000);
+      }
+    }
+    async function customMaskOut(opacity: number) {
+      const background = document.querySelector(
+        "div[data-mask]"
+      ) as unknown as HTMLDivElement;
+
+      if (Math.round((opacity + Number.EPSILON) * 100) / 100 != 0) {
+        background.style.background = `linear-gradient(rgba(0, 0, 0, ${
+          opacity - 0.05
+        }), rgba(0, 0, 0, ${opacity + 0.05}))`;
+        setTimeout(() => customMaskOut(opacity + 0.05), 50);
+      } else {
+        /*text about game being won*/
+      }
+    }
+    customMaskIn(0);
+  };
+  const fadeToLoss = () => {
+    async function customMaskIn(opacity: number) {
+      const background = document.querySelector(
+        "div[data-mask]"
+      ) as unknown as HTMLDivElement;
+      if (Math.round((opacity + Number.EPSILON) * 100) / 100 != 1) {
+        background.style.background = `linear-gradient(rgba(0, 0, 0, ${
+          opacity + 0.05
+        }), rgba(0, 0, 0, ${opacity + 0.05}))`;
+        setTimeout(() => customMaskIn(opacity + 0.05), 50);
+      } else {
+        const oldBackground = document.querySelector(
+          "div[data-rift]"
+        ) as unknown as HTMLDivElement;
+        oldBackground.style.background = `linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0))`;
+        const teamPlayerCards = document.querySelectorAll(
+          "div[data-player-card]"
+        );
+        //move player cards
+        setGameFinished(true);
+        setTimeout(() => customMaskOut(1), 1000);
+      }
+    }
+    async function customMaskOut(opacity: number) {
+      const background = document.querySelector(
+        "div[data-mask]"
+      ) as unknown as HTMLDivElement;
+
+      if (Math.round((opacity + Number.EPSILON) * 100) / 100 != 0) {
+        background.style.background = `linear-gradient(rgba(0, 0, 0, ${
+          opacity - 0.05
+        }), rgba(0, 0, 0, ${opacity + 0.05}))`;
+        setTimeout(() => customMaskOut(opacity + 0.05), 50);
+      } else {
+        /* add text about loss*/
+      }
+    }
+    customMaskIn(0);
   };
 
   useEffect(() => {
@@ -388,7 +484,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       while (events.length != numOfEvents) {
         events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
       }
-      setGamePoints(gamePoints + numOfEvents);
       handleEvents(1, events);
     } else if (gameStage == 2) {
       const numOfEvents = Math.floor(Math.random() * (3 - 1) + 1);
@@ -403,7 +498,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       while (events.length != numOfEvents) {
         events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
       }
-      setGamePoints(gamePoints + numOfEvents * 2);
       handleEvents(2, events);
     } else if (gameStage == 3) {
       const numOfEvents = Math.floor(Math.random() * (4 - 1) + 1);
@@ -418,7 +512,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       while (events.length != numOfEvents) {
         events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
       }
-      setGamePoints(gamePoints + numOfEvents * 3);
       handleEvents(3, events);
     } else if (gameStage == 4) {
       const numOfEvents = Math.floor(Math.random() * (4 - 2) + 2);
@@ -433,7 +526,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       while (events.length != numOfEvents) {
         events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
       }
-      setGamePoints(gamePoints + numOfEvents * 4);
       handleEvents(4, events);
     } else if (gameStage == 5) {
       const numOfEvents = 3;
@@ -448,7 +540,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       while (events.length != numOfEvents) {
         events.push(eventArray[Math.floor(Math.random() * eventArray.length)]);
       }
-      setGamePoints(gamePoints + numOfEvents * 5);
       handleEvents(5, events);
     }
   }, [gameStage]);
@@ -549,13 +640,18 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         <div className={classes.container3} data-rift>
           <div className={classes.container4} data-roles>
             <div className={classes.mask} data-mask>
-              <div className={classes.topText} data-top-text>
-                Choose one player for each role from the following 5 players
-              </div>
+              <div className={classes.topText} data-top-text></div>
 
               <div className={classes.roleSelect}>
                 {roleSelector(roleSelect)}
               </div>
+              {gameFinished && (
+                <button onClick={() => router.push("/")}>
+                  <div>
+                    <span>Home Page</span>
+                  </div>
+                </button>
+              )}
             </div>
           </div>
         </div>
