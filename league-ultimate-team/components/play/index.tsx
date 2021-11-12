@@ -404,9 +404,39 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     setEventNumber(7);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
-    if (isEnemyEvent)
-      setShowButtons(["Keep in your lane", "Try to steal drake"]);
-    else setShowButtons(["Back for items", "Go for turrets"]);
+    if (isEnemyEvent)  {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons(["Force teamfight", "Back off and attempt to steal drake"]);
+          addToTopText(
+            `The enemy team has secured control of the river, and has begun
+            burning down the Infernal Drake. Your team spots ${players[5].Player} on a ward
+            preparing for a flank! Your decision must be quick and absolute. Do you force a 
+            5v5 teamfight before the drake goes down, or send ${players[1].Player}
+            to attempt a Smite steal while trying to deal with the incoming flank?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+      startEvent();
+    } else {
+      const startEvent = (): void => {
+        setTimeout(() => {
+          setShowButtons(["Attempt to burst down the dragon", "Force teamfight with enemy"]);
+          addToTopText(
+            `Through superior macro play, you've gained control of the bottom-side river and started
+            whittling down the elemental drake. ${players[5].Player} is clearing a minion wave in the top lane,
+            but they have teleport. You burn down the drake to 2500 HP when you spot ${players[6].Player}
+            waiting over the wall, posturing for a Smite steal. The rest of the enemy team appear rushing down
+            the river. Do you finish off the drake, confident in ${players[1].Player}'s Smiting abilities, and look to
+            disengage? Or do you play it slow and look for a teamfight instead?
+            `
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+      startEvent();
+    }
     /* if enemy team is doing it, you have choice to flash in with jungler to try and steal
     can either steal, fail steal and live, or die, which is win, small loss, or big loss
     if your team is doing it, choice of whether to back for items (small point gain) or look for fights (can trigger any xvx fight)
@@ -453,7 +483,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       [players[9]],
     ]);
     if (isEnemyElder) {
-      const startEvent = (callback: (word: string) => void): void => {
+      const startEvent = (): void => {
         setTimeout(() => {
           setShowButtons(["Force a fight", "Go for the steal"]);
           addToTopText(
@@ -468,8 +498,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           setTimeout(() => {}, 8000);
         }, 0);
       };
+      startEvent();
     } else {
-      const startEvent = (callback: (word: string) => void): void => {
+      const startEvent = (): void => {
         setTimeout(() => {
           setShowButtons(["Go for the steal", "Look for a fight"]);
           addToTopText(
@@ -485,6 +516,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           setTimeout(() => {}, 8000);
         }, 0);
       };
+      startEvent();
     }
     /* if enemy team is doing it, you have choice to flash in with jungler to try and steal
     can either steal, fail steal and live, or die, which is win, small loss, or big loss
@@ -498,7 +530,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     setEventPlayers([[players[0]], [players[1]]]);
     setShowButtons(["Keep Scaling", "Go for the Backdoor"]);
 
-    const startEvent = (callback: (word: string) => void): void => {
+    const startEvent = (): void => {
       setTimeout(() => {
         addToTopText(
           `All of the enemy inhibs are down, and the enemy has an open Nexus. 
@@ -516,6 +548,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         setTimeout(() => {}, 8000);
       }, 0);
     };
+    startEvent();
 
     /* one of the players on your team notices the chance for a backdoor play. 
       very risky, but you could win the game off of it, regardless of points difference*/
@@ -550,7 +583,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     ]);
 
     if (isEnemyBaron) {
-      const startEvent = (callback: (word: string) => void): void => {
+      const startEvent = (): void => {
         setTimeout(() => {
           setShowButtons(["Play it Safe", "Contest Baron"]);
           addToTopText(
@@ -564,8 +597,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           setTimeout(() => {}, 8000);
         }, 0);
       };
+      startEvent();
     } else {
-      const startEvent = (callback: (word: string) => void): void => {
+      const startEvent = (): void => {
         setTimeout(() => {
           setShowButtons(["Finish Baron", "Force a Teamfight"]);
           addToTopText(
@@ -578,6 +612,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           setTimeout(() => {}, 8000);
         }, 0);
       };
+      startEvent();
     }
     /*if you are doing baron, do you continue to do it, and then after do you look for fights or try to destroy turrets
       if enemy doing baren, do you try and push them off, steal baron, or leave*/
