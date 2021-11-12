@@ -6,6 +6,8 @@ import { compileFunction } from "vm";
 import { IPlayerData } from "../../constants/player.interfaces";
 import { useRouter } from "next/router";
 import { callbackify } from "util";
+import getPlayerFromRole from "../../pages/api/player";
+import useSWR from "swr";
 
 export interface PickProps {}
 
@@ -14,6 +16,24 @@ const r2po = [1 / 5, 1 / 5, 2 / 5, 1 / 5];
 const r3po = [4 / 16, 1 / 16, 3 / 16, 2 / 16, 2 / 16, 4 / 16];
 const r4po = [5 / 25, 7 / 25, 4 / 25, 8 / 25, 1 / 25];
 const r5po = [44 / 100, 35 / 100, 20 / 100, 1 / 100];
+
+async function postData(url = "", data = {}) {
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: "POST", // *GET, POST, PUT, DELETE, etc.
+    mode: "cors", // no-cors, *cors, same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "same-origin", // include, *same-origin, omit
+    headers: {
+      "Content-Type": "application/json",
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: "follow", // manual, *follow, error
+    referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify(data), // body data type must match "Content-Type" header
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
+}
 
 const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   const router = useRouter();
@@ -30,6 +50,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   const [gameChoice, setGameChoice] = useState<number>(-1);
   const [eventNumber, setEventNumber] = useState<number>(-1);
   const [isEnemyEvent, setIsEnemyEvent] = useState<boolean>(false);
+  const [players, setPlayers] = useState<IPlayerData[]>([]);
 
   useEffect(() => {
     const background = document.querySelector(
@@ -51,7 +72,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   async function addToTopText(text: string) {
     let i = 0;
-    let speed = 100;
+    let speed = 50;
     const words = document.querySelector(
       "div[data-top-text]"
     ) as unknown as HTMLDivElement;
@@ -69,55 +90,65 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       "div[data-top-text]"
     ) as unknown as HTMLDivElement;
 
-    let speed = 75;
+    let speed = 50;
     if (words.innerHTML.length) {
       words.innerHTML = words.innerHTML.slice(0, -1);
       setTimeout(removeTopText, speed);
     }
   }
 
-  const createEnemyTeam = (): void => {
-    let ep = [];
+  const createEnemyTeam = async () => {
+    let ep: IPlayerData[] = [];
     while (ep.length != 1) {
-      let newPlayer: IPlayerData = getPlayerFromAPI("JG");
-      let dupe = false;
-
-      if (teamPlayers[0].player == newPlayer.player) dupe = true;
-
-      if (!dupe) ep.push(newPlayer);
+      let newPlayer: IPlayerData;
+      postData("/api/player", { role: "TOP" }).then((data) => {
+        console.log(data); // JSON data parsed by `data.json()` call
+        newPlayer = { ...data };
+        let dupe = false;
+        if (teamPlayers[0].Player == newPlayer.Player) dupe = true;
+        if (!dupe) ep.push(newPlayer);
+      });
     }
     //@ts-ignore
     while (ep.length != 2) {
-      let newPlayer: IPlayerData = getPlayerFromAPI("TOP");
-      let dupe = false;
-
-      if (teamPlayers[1].player == newPlayer.player) dupe = true;
-
-      if (!dupe) ep.push(newPlayer);
+      let newPlayer: IPlayerData;
+      postData("/api/player", { role: "JG" }).then((data) => {
+        console.log(data); // JSON data parsed by `data.json()` call
+        newPlayer = { ...data };
+        let dupe = false;
+        if (teamPlayers[0].Player == newPlayer.Player) dupe = true;
+        if (!dupe) ep.push(newPlayer);
+      });
     }
     while (ep.length != 3) {
-      let newPlayer: IPlayerData = getPlayerFromAPI("MID");
-      let dupe = false;
-
-      if (teamPlayers[2].player == newPlayer.player) dupe = true;
-
-      if (!dupe) ep.push(newPlayer);
+      let newPlayer: IPlayerData;
+      postData("/api/player", { role: "MID" }).then((data) => {
+        console.log(data); // JSON data parsed by `data.json()` call
+        newPlayer = { ...data };
+        let dupe = false;
+        if (teamPlayers[0].Player == newPlayer.Player) dupe = true;
+        if (!dupe) ep.push(newPlayer);
+      });
     }
     while (ep.length != 4) {
-      let newPlayer: IPlayerData = getPlayerFromAPI("ADC");
-      let dupe = false;
-
-      if (teamPlayers[3].player == newPlayer.player) dupe = true;
-
-      if (!dupe) ep.push(newPlayer);
+      let newPlayer: IPlayerData;
+      postData("/api/player", { role: "ADC" }).then((data) => {
+        console.log(data); // JSON data parsed by `data.json()` call
+        newPlayer = { ...data };
+        let dupe = false;
+        if (teamPlayers[0].Player == newPlayer.Player) dupe = true;
+        if (!dupe) ep.push(newPlayer);
+      });
     }
     while (ep.length != 5) {
-      let newPlayer: IPlayerData = getPlayerFromAPI("SUP");
-      let dupe = false;
-
-      if (teamPlayers[4].player == newPlayer.player) dupe = true;
-
-      if (!dupe) ep.push(newPlayer);
+      let newPlayer: IPlayerData;
+      postData("/api/player", { role: "SUP" }).then((data) => {
+        console.log(data); // JSON data parsed by `data.json()` call
+        newPlayer = { ...data };
+        let dupe = false;
+        if (teamPlayers[0].Player == newPlayer.Player) dupe = true;
+        if (!dupe) ep.push(newPlayer);
+      });
     }
     setEnemyPlayers(ep);
   };
@@ -213,13 +244,13 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     if (isEnemyEvent) {
       const startEvent = (callback: (word: string) => void): void => {
         setTimeout(() => {
-          addToTopText(`${players[0].player} and ${
-            players[1].player
+          addToTopText(`${players[0].Player} and ${
+            players[1].Player
           } come face to face in a 1v1. Both champions are level ${Math.floor(
             Math.random() * 3 + stage * 2 + 1
           )} and trade auto 
           attacks. Then, ${
-            players[1].player
+            players[1].Player
           } starts to engage. Do you back off, or stand your ground?`);
           setTimeout(() => {}, 8000);
         }, 0);
@@ -227,13 +258,13 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     } else {
       const startEvent = (callback: (word: string) => void): void => {
         setTimeout(() => {
-          addToTopText(`${players[0].player} and ${
-            players[1].player
+          addToTopText(`${players[0].Player} and ${
+            players[1].Player
           } come face to face in a 1v1. Both champions are level ${Math.floor(
             Math.random() * 3 + stage * 2 + 1
           )} and trade auto 
           attacks. Then, ${
-            players[0].player
+            players[0].Player
           } starts to engage. Do you continue engaging?`);
           setTimeout(() => {}, 8000);
         }, 0);
@@ -268,17 +299,18 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       const startEvent = (callback: (word: string) => void): void => {
         setTimeout(() => {
           addToTopText(
-            `${players[0][0].player} and ${players[0][1].player} 
+            `${players[0][0].Player} and ${players[0][1].Player} 
             on your team are teaming up to clear vision when they run into 
-            ${players[1][0].player} and ${players[1][1].player}. 
-            Both ${players[0][0].player} and ${players[1][0].player} 
+            ${players[1][0].Player} and ${players[1][1].Player}. 
+            Both ${players[0][0].Player} and ${players[1][0].Player} 
             are level ${Math.floor(Math.random() * 3 + stage * 2 + 1)}, 
-            while ${players[0][1].player} and ${players[1][1].player} 
+            while ${players[0][1].Player} and ${players[1][1].Player} 
             are level ${Math.floor(Math.random() * 3 + stage * 2 + 1)}. 
-            After landing some poke and bringing ${players[1][0].player} down 
-            to 40% HP, ${players[0][0].player} sees the angle for a free 
-            double kill and calls to engage. Should your team 
-            go all in to try and secure these kills?`
+            After a short trade, ${players[0][0].Player} is brought down 
+            to 40% HP. However, you know that neither enemy player has any 
+            summoner spells off cooldown, while both of your players have all 
+            summoner spells available. Should your team play it safe and back off, 
+            or try and go for the outplay?`
           );
           setTimeout(() => {}, 8000);
         }, 0);
@@ -287,18 +319,17 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       const startEvent = (callback: (word: string) => void): void => {
         setTimeout(() => {
           addToTopText(
-            `${players[0][0].player} and ${players[0][1].player} 
+            `${players[0][0].Player} and ${players[0][1].Player} 
             on your team are teaming up to clear vision when they run into 
-            ${players[1][0].player} and ${players[1][1].player}. 
-            Both ${players[0][0].player} and ${players[1][0].player} 
+            ${players[1][0].Player} and ${players[1][1].Player}. 
+            Both ${players[0][0].Player} and ${players[1][0].Player} 
             are level ${Math.floor(Math.random() * 3 + stage * 2 + 1)}, 
-            while ${players[0][1].player} and ${players[1][1].player} 
+            while ${players[0][1].Player} and ${players[1][1].Player} 
             are level ${Math.floor(Math.random() * 3 + stage * 2 + 1)}. 
-            After a short trade, ${players[0][0].player} is brought down 
-            to 40% HP. However, you know that neither enemy player has any 
-            summoner spells off cooldown, while both of your players have all 
-            summoner spells available. Should your team play it safe and back off, 
-            or try and go for the outplay?`
+            After landing some poke and bringing ${players[1][0].Player} down 
+            to 40% HP, ${players[0][0].Player} sees the angle for a free 
+            double kill and calls to engage. Should your team 
+            go all in to try and secure these kills?`
           );
           setTimeout(() => {}, 8000);
         }, 0);
@@ -394,11 +425,65 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   const handleElderDrake = (): void => {
     setEventNumber(9);
-    setIsEnemyEvent(!!Math.floor(Math.random() * 2));
-
-    if (isEnemyEvent)
-      setShowButtons(["Keep in your lane", "Try to steal drake"]);
-    else setShowButtons(["Back for items", "Go for turrets"]);
+    const isEnemyElder = [Math.floor(Math.random() * 2)];
+    const players: IPlayerData[] = [
+      teamPlayers[0],
+      teamPlayers[1],
+      teamPlayers[2],
+      teamPlayers[3],
+      teamPlayers[4],
+      enemyPlayers[0],
+      enemyPlayers[1],
+      enemyPlayers[2],
+      enemyPlayers[3],
+      enemyPlayers[4],
+    ];
+    setEventPlayers([
+      [players[0]],
+      [players[1]],
+      [players[2]],
+      [players[3]],
+      [players[4]],
+      [players[5]],
+      [players[6]],
+      [players[7]],
+      [players[8]],
+      [players[9]],
+    ]);
+    if (isEnemyElder) {
+      const startEvent = (callback: (word: string) => void): void => {
+        setTimeout(() => {
+          setShowButtons(["Force a fight", "Go for the steal"]);
+          addToTopText(
+            `The enemy team has secured control of the river, and has begun
+            burning down the Elder Dragon. You notice that ${players[5].Player}, 
+            ${players[7].Player}, and ${players[8].Player} have Stopwatches,
+            so it's going to be pretty hard to win a teamfight, but it'll
+            be almost impossible to win if they secure the Elder Buff. Do you force a 
+            5v5 teamfight before the Elder Dragon goes down, or send ${players[1].Player}
+            to attempt a Smite steal?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+    } else {
+      const startEvent = (callback: (word: string) => void): void => {
+        setTimeout(() => {
+          setShowButtons(["Go for the steal", "Look for a fight"]);
+          addToTopText(
+            `You've secured vision in the enemy jungle, and cleared all enemy wards 
+            within the bottom river and Dragon pit. After spotting ${players[8].Player}
+            clearing minion waves in the top lane, you decide to start hitting the Elder 
+            Dragon. You burn it down to 2500 HP when you spot ${players[6].Player} waiting
+            over the wall, posturing for a Smite steal. Do you finish off the Elder Dragon, 
+            confident in ${players[1].Player}'s Smiting abilities? Or do you play it slow
+            and look for a teamfight instead?
+            `
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+    }
     /* if enemy team is doing it, you have choice to flash in with jungler to try and steal
     can either steal, fail steal and live, or die, which is win, small loss, or big loss
     if your team is doing it, choice of whether to go destroy the enemy's turrets or look for fights (can trigger any xvx fight)
@@ -419,10 +504,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           is poised to take both Baron Nashor and the Elder Dragon. Your team is 
           busy discussing a base defense strategy when 
           ${
-            players[Math.floor(Math.random() * 2)].player
+            players[Math.floor(Math.random() * 2)].Player
           } notices a hidden ward 
           in the enemy base and calls for a backdoor. Both 
-          ${players[0].player} and ${players[1].player} have Teleport available
+          ${players[0].Player} and ${players[1].Player} have Teleport available
           and respawn in 5 seconds. Do you play it safe and continue scaling, 
           or go for the backdoor win?`
         );
@@ -436,10 +521,62 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   const handleBaron = (): void => {
     setEventNumber(11);
-    setIsEnemyEvent(!!Math.floor(Math.random() * 2));
+    const isEnemyBaron = [Math.floor(Math.random() * 2)];
+    const players: IPlayerData[] = [
+      teamPlayers[0],
+      teamPlayers[1],
+      teamPlayers[2],
+      teamPlayers[3],
+      teamPlayers[4],
+      enemyPlayers[0],
+      enemyPlayers[1],
+      enemyPlayers[2],
+      enemyPlayers[3],
+      enemyPlayers[4],
+    ];
+    setEventPlayers([
+      [players[0]],
+      [players[1]],
+      [players[2]],
+      [players[3]],
+      [players[4]],
+      [players[5]],
+      [players[6]],
+      [players[7]],
+      [players[8]],
+      [players[9]],
+    ]);
 
-    if (isEnemyEvent) setShowButtons(["Leave", "Teamfight to Steal Baron"]);
-    else setShowButtons(["Go for Turrets", "Go for the Nexus"]);
+    if (isEnemyBaron) {
+      const startEvent = (callback: (word: string) => void): void => {
+        setTimeout(() => {
+          setShowButtons(["Play it Safe", "Contest Baron"]);
+          addToTopText(
+            `You discover that the enemy team is attempting to sneak Baron, 
+            and they've already gotten it down to 6000 HP. Luckily, your entire
+            team is in mid lane so you can rotate quickly, but you don't see 
+            ${players[9].Player} anywhere on the map and suspect they might be 
+            looking for a flank. Do you contest the baron and force a teamfight,
+            or play it safe and shove out mid lane instead?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+    } else {
+      const startEvent = (callback: (word: string) => void): void => {
+        setTimeout(() => {
+          setShowButtons(["Finish Baron", "Force a Teamfight"]);
+          addToTopText(
+            `Your team has started doing Baron, and has already gotten it down 
+            to 4000 HP. Suddenly, a enemy TP begins to channel on a ward in the pit, 
+            and you see the remaining 4 players charge towards you from the mid lane.
+            Do you attempt to finish Baron as quickly as you can, or instantly turn on
+            the enemy team and force a 5v4?`
+          );
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+    }
     /*if you are doing baron, do you continue to do it, and then after do you look for fights or try to destroy turrets
       if enemy doing baren, do you try and push them off, steal baron, or leave*/
   };
@@ -703,75 +840,69 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     }
   }, [gameStage]);
 
+  async function playerSelect(role: string) {
+    let tPlayers: IPlayerData[] = [];
+
+    let speed = 1000;
+
+    async function callbackFunction() {
+      let newPlayer: IPlayerData;
+
+      postData("/api/player", { role: "TOP" }).then((data) => {
+        newPlayer = { ...data };
+        let dupe = false;
+        for (let i = 0; i < tPlayers.length; i++) {
+          if (tPlayers[i].Player == newPlayer.Player) dupe = true;
+        }
+        if (!dupe && tPlayers.length < 5) tPlayers.push(newPlayer);
+        if (tPlayers.length < 5 && players.length < 5) {
+          setTimeout(callbackFunction, speed);
+        } else {
+          if (players.length != 5) setPlayers(tPlayers);
+        }
+      });
+    }
+    callbackFunction();
+  }
+  useEffect(() => {
+    console.log(players, "tp");
+  }, [players]);
+
   const roleSelector = (role: number): ReactElement => {
     if (!role) return <></>;
-    let players: IPlayerData[] = [];
-
     if (role == 1) {
-      while (players.length != 5) {
-        let newPlayer: IPlayerData = getPlayerFromAPI("JG");
-        let dupe = false;
-        for (let i = 0; i < players.length; i++) {
-          if (players[i].player == newPlayer.player) dupe = true;
-        }
-        if (!dupe) players.push(newPlayer);
-      }
+      playerSelect("TOP");
     } else if (role == 2) {
-      while (players.length != 5) {
-        let newPlayer: IPlayerData = getPlayerFromAPI("TOP");
-        let dupe = false;
-        for (let i = 0; i < players.length; i++) {
-          if (players[i].player == newPlayer.player) dupe = true;
-        }
-        if (!dupe) players.push(newPlayer);
-      }
+      playerSelect("JG");
     } else if (role == 3) {
-      while (players.length != 5) {
-        let newPlayer: IPlayerData = getPlayerFromAPI("MID");
-        let dupe = false;
-        for (let i = 0; i < players.length; i++) {
-          if (players[i].player == newPlayer.player) dupe = true;
-        }
-        if (!dupe) players.push(newPlayer);
-      }
+      playerSelect("MID");
     } else if (role == 4) {
-      while (players.length != 5) {
-        let newPlayer: IPlayerData = getPlayerFromAPI("ADC");
-        let dupe = false;
-        for (let i = 0; i < players.length; i++) {
-          if (players[i].player == newPlayer.player) dupe = true;
-        }
-        if (!dupe) players.push(newPlayer);
-      }
+      playerSelect("ADC");
     } else if (role == 5) {
-      while (players.length != 5) {
-        let newPlayer: IPlayerData = getPlayerFromAPI("SUP");
-        let dupe = false;
-        for (let i = 0; i < players.length; i++) {
-          if (players[i].player == newPlayer.player) dupe = true;
-        }
-        if (!dupe) players.push(newPlayer);
-      }
+      playerSelect("SUP");
     } else {
       return <></>;
     }
     return (
       <div className={classes.fivePlayerContainer}>
         {players.map((player: IPlayerData, index: number) => {
+          const playerCard = require(`../../public/images/playerCards/${player.Player}.png`);
+
           return (
-            <div className={classes.playerCard} data-player-card>
+            <div className={classes.PlayerCard} data-player-card>
               <button
                 onClick={() => {
                   let existingPlayers = [...teamPlayers];
                   existingPlayers.push(player);
                   addTeamPlayers(existingPlayers);
+                  setPlayers([]);
                   setRoleSelect(roleSelect + 1);
                 }}
-                disabled={teamPlayers.length > index}
+                style={{ background: "none", border: "none" }}
               >
                 <Image
-                  src={`../../public/images/playerCards/${player.player}`}
-                  width={500}
+                  src={playerCard}
+                  width={200}
                   height={300}
                   layout={"fixed"}
                 />
@@ -779,13 +910,15 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             </div>
           );
         })}
+        {console.log(players, "PLAYERS")}
+        <div></div>
       </div>
     );
   };
 
   const smallRisk = () => {
-    const teamOdds = eventPlayers[0].reduce((x, y) => x + y.overall, 0);
-    const enemyOdds = eventPlayers[1].reduce((x, y) => x + y.overall, 0);
+    const teamOdds = eventPlayers[0].reduce((x, y) => x + y.Overall, 0);
+    const enemyOdds = eventPlayers[1].reduce((x, y) => x + y.Overall, 0);
     const playerIsWinner =
       Math.floor(Math.random() * (teamOdds + enemyOdds)) <= teamOdds;
     if (playerIsWinner) {
@@ -797,8 +930,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const midRisk = () => {
-    const teamOdds = eventPlayers[0].reduce((x, y) => x + y.overall, 0);
-    const enemyOdds = eventPlayers[1].reduce((x, y) => x + y.overall, 0);
+    const teamOdds = eventPlayers[0].reduce((x, y) => x + y.Overall, 0);
+    const enemyOdds = eventPlayers[1].reduce((x, y) => x + y.Overall, 0);
     const playerIsWinner =
       Math.floor(Math.random() * (teamOdds + enemyOdds)) <= teamOdds;
     if (playerIsWinner) {
@@ -810,8 +943,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const bigRisk = () => {
-    const teamOdds = eventPlayers[0].reduce((x, y) => x + y.overall, 0);
-    const enemyOdds = eventPlayers[1].reduce((x, y) => x + y.overall, 0);
+    const teamOdds = eventPlayers[0].reduce((x, y) => x + y.Overall, 0);
+    const enemyOdds = eventPlayers[1].reduce((x, y) => x + y.Overall, 0);
     const playerIsWinner =
       Math.floor(Math.random() * (teamOdds + enemyOdds)) <= teamOdds;
     if (playerIsWinner) {
@@ -827,29 +960,29 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       switch (eventNumber) {
         case 1:
           /*you won*/
-          `After gracefully dodging a skillshot ${eventPlayers[0][0].player} engages! Although ${eventPlayers[1][0].player} puts
-          up a fight, they ultimately die, giving  ${eventPlayers[0][0].player} the advantage.`;
+          `After gracefully dodging a skillshot ${eventPlayers[0][0].Player} engages! Although ${eventPlayers[1][0].Player} puts
+          up a fight, they ultimately die, giving  ${eventPlayers[0][0].Player} the advantage.`;
           break;
         case 2:
           /*you won*/
-          `Using their superb teamwork ${eventPlayers[0][0].player} and ${eventPlayers[0][1].player} trap ${eventPlayers[1][0].player}! ${eventPlayers[1][1].player} tries
+          `Using their superb teamwork ${eventPlayers[0][0].Player} and ${eventPlayers[0][1].Player} trap ${eventPlayers[1][0].Player}! ${eventPlayers[1][1].Player} tries
          to help, but is too late. Your team secures the kill and gets out alive`;
           break;
         case 3:
           /*you won*/
           `After some skirmishing,  ${
-            eventPlayers[0][Math.floor(Math.random() * 5)].player
+            eventPlayers[0][Math.floor(Math.random() * 5)].Player
           } hits a huge ultimate, decimating the other team. Then,  ${
-            eventPlayers[0][Math.floor(Math.random() * 5)].player
+            eventPlayers[0][Math.floor(Math.random() * 5)].Player
           } 
           cleans up the rest of the enemy team. ACE!`;
           break;
         case 4:
           /*you won*/
           if (isEnemyEvent) {
-            `${eventPlayers[1][1].player} walks up behind you, but ${eventPlayers[0][0].player} flashes out at the last second, staying alive to see another fight.`;
+            `${eventPlayers[1][1].Player} walks up behind you, but ${eventPlayers[0][0].Player} flashes out at the last second, staying alive to see another fight.`;
           } else {
-            `${eventPlayers[0][1].player} gets the jump on ${eventPlayers[1][0].player}, and with the support of ${eventPlayers[0][0].player} your team gets the shutdown on ${eventPlayers[1][0].player}`;
+            `${eventPlayers[0][1].Player} gets the jump on ${eventPlayers[1][0].Player}, and with the support of ${eventPlayers[0][0].Player} your team gets the shutdown on ${eventPlayers[1][0].Player}`;
           }
 
           break;
@@ -862,39 +995,39 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           break;
         case 6:
           if (isEnemyEvent) {
-            `${eventPlayers[1][1].player} walks up behind you, but ${eventPlayers[0][0].player} flashes out at the last second, staying alive to see another fight.`;
+            `${eventPlayers[1][1].Player} walks up behind you, but ${eventPlayers[0][0].Player} flashes out at the last second, staying alive to see another fight.`;
           } else {
-            `${eventPlayers[0][1].player} gets the jump on ${eventPlayers[1][0].player}, and with the support of ${eventPlayers[0][0].player} your team gets the shutdown on ${eventPlayers[1][0].player}`;
+            `${eventPlayers[0][1].Player} gets the jump on ${eventPlayers[1][0].Player}, and with the support of ${eventPlayers[0][0].Player} your team gets the shutdown on ${eventPlayers[1][0].Player}`;
           }
           break;
         case 7:
           if (isEnemyEvent) {
-            `${eventPlayers[0][0].player} steals the first drake and makes it out alive!`;
+            `${eventPlayers[0][0].Player} steals the first drake and makes it out alive!`;
           } else {
             `Your team gets the first drake of the game, a huge boost to your confidence and extending your lead`;
           }
           break;
         case 8:
           if (isEnemyEvent) {
-            `${eventPlayers[0][0].player} steals the soul drake and makes it out alive!`;
+            `${eventPlayers[0][0].Player} steals the soul drake and makes it out alive!`;
           } else {
             `Your team gets the soul drake, a huge boost to your stats and extending your lead`;
           }
           break;
         case 9:
           if (isEnemyEvent) {
-            `${eventPlayers[0][0].player} steals the elder drake and makes it out alive!`;
+            `${eventPlayers[0][0].Player} steals the elder drake and makes it out alive!`;
           } else {
             `Your team gets the elder drake, a huge boost to your team power and extending your lead`;
           }
           break;
         case 10:
-          `${eventPlayers[0][0].player} backdoors the other team! You win!`;
+          `${eventPlayers[0][0].Player} backdoors the other team! You win!`;
 
           break;
         case 11:
           if (isEnemyEvent) {
-            `${eventPlayers[0][0].player} steals baron in exchange for their life!`;
+            `${eventPlayers[0][0].Player} steals baron in exchange for their life!`;
           } else {
             `Your team slays baron. With a 3 minute Baron powerplay, your team pulls ahead in the game!`;
           }
@@ -904,29 +1037,29 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       switch (eventNumber) {
         case 1:
           /*you won*/
-          `After gracefully dodging a skillshot ${eventPlayers[1][0].player} engages! Although ${eventPlayers[0][0].player} puts
-          up a fight, they ultimately die, giving  ${eventPlayers[1][0].player} the advantage.`;
+          `After gracefully dodging a skillshot ${eventPlayers[1][0].Player} engages! Although ${eventPlayers[0][0].Player} puts
+          up a fight, they ultimately die, giving  ${eventPlayers[1][0].Player} the advantage.`;
           break;
         case 2:
           /*you won*/
-          `Using their superb teamwork ${eventPlayers[1][0].player} and ${eventPlayers[1][1].player} trap ${eventPlayers[0][0].player}! ${eventPlayers[0][1].player} tries
+          `Using their superb teamwork ${eventPlayers[1][0].Player} and ${eventPlayers[1][1].Player} trap ${eventPlayers[0][0].Player}! ${eventPlayers[0][1].Player} tries
          to help, but is too late. The opponent's team secures the kill and gets out alive`;
           break;
         case 3:
           /*you won*/
           `After some skirmishing,  ${
-            eventPlayers[1][Math.floor(Math.random() * 5)].player
+            eventPlayers[1][Math.floor(Math.random() * 5)].Player
           } hits a huge ultimate, decimating the other team. Then,  ${
-            eventPlayers[1][Math.floor(Math.random() * 5)].player
+            eventPlayers[1][Math.floor(Math.random() * 5)].Player
           } 
           cleans up the rest of your team. ACE!`;
           break;
         case 4:
           /*you won*/
           if (isEnemyEvent) {
-            `${eventPlayers[0][1].player} walks up behind the opponent, but ${eventPlayers[1][0].player} flashes out at the last second, staying alive to see another fight.`;
+            `${eventPlayers[0][1].Player} walks up behind the opponent, but ${eventPlayers[1][0].Player} flashes out at the last second, staying alive to see another fight.`;
           } else {
-            `${eventPlayers[1][1].player} gets the jump on ${eventPlayers[0][0].player}, and with the support of ${eventPlayers[1][0].player} their team gets the shutdown on ${eventPlayers[0][0].player}`;
+            `${eventPlayers[1][1].Player} gets the jump on ${eventPlayers[0][0].Player}, and with the support of ${eventPlayers[1][0].Player} their team gets the shutdown on ${eventPlayers[0][0].Player}`;
           }
 
           break;
@@ -939,39 +1072,39 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           break;
         case 6:
           if (isEnemyEvent) {
-            `${eventPlayers[0][1].player} walks up behind the opponent, but ${eventPlayers[1][0].player} flashes out at the last second, staying alive to see another fight.`;
+            `${eventPlayers[0][1].Player} walks up behind the opponent, but ${eventPlayers[1][0].Player} flashes out at the last second, staying alive to see another fight.`;
           } else {
-            `${eventPlayers[1][1].player} gets the jump on ${eventPlayers[0][0].player}, and with the support of ${eventPlayers[1][0].player} their team gets the shutdown on ${eventPlayers[0][0].player}`;
+            `${eventPlayers[1][1].Player} gets the jump on ${eventPlayers[0][0].Player}, and with the support of ${eventPlayers[1][0].Player} their team gets the shutdown on ${eventPlayers[0][0].Player}`;
           }
           break;
         case 7:
           if (isEnemyEvent) {
-            `${eventPlayers[1][0].player} steals the first drake and makes it out alive!`;
+            `${eventPlayers[1][0].Player} steals the first drake and makes it out alive!`;
           } else {
             `The other team team gets the first drake of the game, a huge boost to their confidence and extending their lead`;
           }
           break;
         case 8:
           if (isEnemyEvent) {
-            `${eventPlayers[1][0].player} steals the soul drake and makes it out alive!`;
+            `${eventPlayers[1][0].Player} steals the soul drake and makes it out alive!`;
           } else {
             `The other team gets the soul drake, a huge boost to their stats and extending their lead`;
           }
           break;
         case 9:
           if (isEnemyEvent) {
-            `${eventPlayers[1][0].player} steals the elder drake and makes it out alive!`;
+            `${eventPlayers[1][0].Player} steals the elder drake and makes it out alive!`;
           } else {
             `The other team gets the elder drake, a huge boost to their team power and extending their lead`;
           }
           break;
         case 10:
-          `${eventPlayers[0][0].player} fails to backdoor the other team. Your team falls even further behind`;
+          `${eventPlayers[0][0].Player} fails to backdoor the other team. Your team falls even further behind`;
 
           break;
         case 11:
           if (isEnemyEvent) {
-            `${eventPlayers[1][0].player} steals baron in exchange for their life!`;
+            `${eventPlayers[1][0].Player} steals baron in exchange for their life!`;
           } else {
             `The other team slays baron. With a 3 minute Baron powerplay, the other team pulls ahead in the game!`;
           }
@@ -1038,6 +1171,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
               <div className={classes.roleSelect}>
                 {roleSelector(roleSelect)}
               </div>
+
               {showButtons && (
                 <div className={classes.buttonOptions}>
                   {showButtons.map((text, index) => {
