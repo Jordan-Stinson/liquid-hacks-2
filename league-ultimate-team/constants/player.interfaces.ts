@@ -4,21 +4,13 @@ export interface IPlayerData {
   region: string;
   import: boolean;
   team: string;
-  position: Roles;
+  position: string;
   lan: number;
   vis: number;
   car: number;
   exp: number;
   ver: number;
   thr: number;
-}
-
-export enum Roles {
-  TOP = "TOP",
-  MID = "MID",
-  JG = "JG",
-  SUP = "SUP",
-  ADC = "ADC",
 }
 
 export enum RatingBreakpoints {
