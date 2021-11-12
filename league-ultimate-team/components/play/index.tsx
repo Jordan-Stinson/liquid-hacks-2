@@ -267,10 +267,11 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             are level ${Math.floor(Math.random() * 3 + stage * 2 + 1)}, 
             while ${players[0][1].player} and ${players[1][1].player} 
             are level ${Math.floor(Math.random() * 3 + stage * 2 + 1)}. 
-            After landing some poke and bringing ${players[1][0].player} down 
-            to 40% HP, ${players[0][0].player} sees the angle for a free 
-            double kill and calls to engage. Should your team 
-            go all in to try and secure these kills?`);
+            After a short trade, ${players[0][0].player} is brought down 
+            to 40% HP. However, you know that neither enemy player has any 
+            summoner spells off cooldown, while both of your players have all 
+            summoner spells available. Should your team play it safe and back off, 
+            or try and go for the outplay?`);
           setTimeout(() => {}, 8000);
         }, 0);
       };
@@ -285,11 +286,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             are level ${Math.floor(Math.random() * 3 + stage * 2 + 1)}, 
             while ${players[0][1].player} and ${players[1][1].player} 
             are level ${Math.floor(Math.random() * 3 + stage * 2 + 1)}. 
-            After a short trade, ${players[0][0].player} is brought down 
-            to 40% HP. However, you know that neither enemy player has any 
-            summoner spells off cooldown, while both of your players have all 
-            summoner spells available. Should your team play it safe and back off, 
-            or try and go for the outplay?`);
+            After landing some poke and bringing ${players[1][0].player} down 
+            to 40% HP, ${players[0][0].player} sees the angle for a free 
+            double kill and calls to engage. Should your team 
+            go all in to try and secure these kills?`);
           setTimeout(() => {}, 8000);
         }, 0);
       };
@@ -383,11 +383,43 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   const handleElderDrake = (): void => {
     setEventNumber(9);
-    const isEnemyGank = [Math.floor(Math.random() * 2)];
-
-    if (isEnemyGank)
-      setShowButtons(["Keep in your lane", "Try to steal drake"]);
-    else setShowButtons(["Back for items", "Go for turrets"]);
+    const isEnemyElder = [Math.floor(Math.random() * 2)];
+    const players: IPlayerData[] = [teamPlayers[0], teamPlayers[1], teamPlayers[2], teamPlayers[3], teamPlayers[4],
+                                    enemyPlayers[0], enemyPlayers[1], enemyPlayers[2], enemyPlayers[3], enemyPlayers[4]];
+    setEventPlayers([[players[0]], [players[1]], [players[2]], [players[3]], [players[4]],
+                     [players[5]], [players[6]], [players[7]], [players[8]], [players[9]]]);
+    if (isEnemyElder) {
+      const startEvent = (callback: (word: string) => void): void => {
+        setTimeout(() => {
+          setShowButtons(["Force a fight", "Go for the steal"]);
+          addToTopText(
+            `The enemy team has secured control of the river, and has begun
+            burning down the Elder Dragon. You notice that ${players[5].player}, 
+            ${players[7].player}, and ${players[8].player} have Stopwatches,
+            so it's going to be pretty hard to win a teamfight, but it'll
+            be almost impossible to win if they secure the Elder Buff. Do you force a 
+            5v5 teamfight before the Elder Dragon goes down, or send ${players[1].player}
+            to attempt a Smite steal?`);
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+    } else {
+      const startEvent = (callback: (word: string) => void): void => {
+        setTimeout(() => {
+          setShowButtons(["Go for the steal", "Look for a fight"]);
+          addToTopText(
+            `You've secured vision in the enemy jungle, and cleared all enemy wards 
+            within the bottom river and Dragon pit. After spotting ${players[8].player}
+            clearing minion waves in the top lane, you decide to start hitting the Elder 
+            Dragon. You burn it down to 2500 HP when you spot ${players[6].player} waiting
+            over the wall, posturing for a Smite steal. Do you finish off the Elder Dragon, 
+            confident in ${players[1].player}'s Smiting abilities? Or do you play it slow
+            and look for a teamfight instead?
+            `);
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+    }
     /* if enemy team is doing it, you have choice to flash in with jungler to try and steal
     can either steal, fail steal and live, or die, which is win, small loss, or big loss
     if your team is doing it, choice of whether to go destroy the enemy's turrets or look for fights (can trigger any xvx fight)
@@ -422,10 +454,40 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   const handleBaron = (): void => {
     setEventNumber(11);
-    const isEnemyGank = [Math.floor(Math.random() * 2)];
-
-    if (isEnemyGank) setShowButtons(["Leave", "Teamfight to Steal Baron"]);
-    else setShowButtons(["Go for Turrets", "Go for the Nexus"]);
+    const isEnemyBaron = [Math.floor(Math.random() * 2)];
+    const players: IPlayerData[] = [teamPlayers[0], teamPlayers[1], teamPlayers[2], teamPlayers[3], teamPlayers[4],
+                                    enemyPlayers[0], enemyPlayers[1], enemyPlayers[2], enemyPlayers[3], enemyPlayers[4]];
+    setEventPlayers([[players[0]], [players[1]], [players[2]], [players[3]], [players[4]],
+                     [players[5]], [players[6]], [players[7]], [players[8]], [players[9]]]);
+    
+    if (isEnemyBaron) {
+      const startEvent = (callback: (word: string) => void): void => {
+        setTimeout(() => {
+          setShowButtons(["Play it Safe", "Contest Baron"]);
+          addToTopText(
+            `You discover that the enemy team is attempting to sneak Baron, 
+            and they've already gotten it down to 6000 HP. Luckily, your entire
+            team is in mid lane so you can rotate quickly, but you don't see 
+            ${players[9].player} anywhere on the map and suspect they might be 
+            looking for a flank. Do you contest the baron and force a teamfight,
+            or play it safe and shove out mid lane instead?`);
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+    } else {
+      const startEvent = (callback: (word: string) => void): void => {
+        setTimeout(() => {
+          setShowButtons(["Finish Baron", "Force a Teamfight"]);
+          addToTopText(
+            `Your team has started doing Baron, and has already gotten it down 
+            to 4000 HP. Suddenly, a enemy TP begins to channel on a ward in the pit, 
+            and you see the remaining 4 players charge towards you from the mid lane.
+            Do you attempt to finish Baron as quickly as you can, or instantly turn on
+            the enemy team and force a 5v4?`);
+          setTimeout(() => {}, 8000);
+        }, 0);
+      };
+    }
     /*if you are doing baron, do you continue to do it, and then after do you look for fights or try to destroy turrets
       if enemy doing baren, do you try and push them off, steal baron, or leave*/
   };
