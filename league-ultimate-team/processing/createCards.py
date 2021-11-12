@@ -100,6 +100,6 @@ if __name__ == "__main__":
         textBox.send_keys(statTitles[i])
 
     # Create cards
-    createCards(cardStats, driver, 51)
+    createCards(cardStats, driver)
     time.sleep(3)
     driver.quit()
