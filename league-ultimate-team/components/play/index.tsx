@@ -366,8 +366,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           setShowButtons(["Back off", "Engage"]);
           addToTopText(
             `Both teams are posturing around mid lane, trying to gain lane priority before
-            the next objective spawns. As a result of your previous skirmishes, ${players[3].player}
-            has 1 minute left on his Flash cooldown. Suddenly, ${players[4].player} spots a Teleport 
+            the next objective spawns. As a result of your previous skirmishes, ${players[3].Player}
+            has 1 minute left on his Flash cooldown. Suddenly, ${players[4].Player} spots a Teleport 
             channelling on a flank ward in the Wolf pit behind your team. Do you run back towards your
             mid lane tower, or engage on the enemy team before they can engage on you?`);
           setTimeout(() => {}, 8000);
@@ -380,10 +380,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           setShowButtons(["Back off", "Engage"]);
           addToTopText(
             `Both teams are posturing around mid lane, trying to gain lane priority before
-            the next objective spawns. From your previous skirmishes, you know that ${players[8].player}
-            has 30 seconds left on his Flash cooldown, but ${players[4].player} has 25 seconds left
+            the next objective spawns. From your previous skirmishes, you know that ${players[8].Player}
+            has 30 seconds left on his Flash cooldown, but ${players[4].Player} has 25 seconds left
             on his R cooldown. There are two flank wards in the enemy jungle, 
-            and both ${players[0].player} and ${players[2].player} have Teleport available. Do you 
+            and both ${players[0].Player} and ${players[2].Player} have Teleport available. Do you 
             set up a TP flank and force the engage? Or do you play it slow and wait for all ultimates 
             to be available?`);
           setTimeout(() => {}, 8000);
@@ -412,9 +412,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         setTimeout(() => {
           setShowButtons(["Clear the wave", "Back off"]);
           addToTopText(
-            `${players[0].player} is playing forward, trying to push out his lane
-            in order to get a better reset. Suddenly, he spots ${players[2].player}
-            clearing a ward in the top river brush. Should ${players[0].player} finish
+            `${players[0].Player} is playing forward, trying to push out his lane
+            in order to get a better reset. Suddenly, he spots ${players[2].Player}
+            clearing a ward in the top river brush. Should ${players[0].Player} finish
             clearing the minion wave, or back off immediately?`);
           setTimeout(() => {}, 8000);
         }, 0);
@@ -425,11 +425,11 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         setTimeout(() => {
           setShowButtons(["Gank top lane", "Clear camps"]);
           addToTopText(
-            `After some heavy trading, both ${players[0].player} and ${players[2].player} 
-            are 30% HP. ${players[1].player} is currently in the top river, and begins 
-            pathing towards top lane. However, both ${players[3].player} and ${players[4].player} 
+            `After some heavy trading, both ${players[0].Player} and ${players[2].Player} 
+            are 30% HP. ${players[1].Player} is currently in the top river, and begins 
+            pathing towards top lane. However, both ${players[3].Player} and ${players[4].Player} 
             are missing, and haven't been spotted on any wards in quite some time. Should 
-            ${players[1].player} gank top lane, or go back to clearing his camps?`);
+            ${players[1].Player} gank top lane, or go back to clearing his camps?`);
           setTimeout(() => {}, 8000);
         }, 0);
         startEvent();
@@ -444,9 +444,34 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handleRiftHerald = (): void => {
+    
+    setEventNumber(5);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
-    setEventNumber(5);
+    const players: IPlayerData[] = [
+      teamPlayers[0],
+      teamPlayers[1],
+      teamPlayers[2],
+      teamPlayers[3],
+      teamPlayers[4],
+      enemyPlayers[0],
+      enemyPlayers[1],
+      enemyPlayers[2],
+      enemyPlayers[3],
+      enemyPlayers[4],
+    ];
+    setEventPlayers([
+      [players[0]],
+      [players[1]],
+      [players[2]],
+      [players[3]],
+      [players[4]],
+      [players[5]],
+      [players[6]],
+      [players[7]],
+      [players[8]],
+      [players[9]],
+    ]);
 
     if (isEnemyEvent)  {
       const startEvent = (): void => {
@@ -493,10 +518,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         setTimeout(() => {
           setShowButtons(["Clear the wave", "Back off"]);
           addToTopText(
-            `${players[0].player} and ${players[1].player} are playing forward, trying to 
+            `${players[0].Player} and ${players[1].Player} are playing forward, trying to 
             push their lane out in order to get a better reset. Suddenly, they spot 
-            ${players[4].player} clearing a ward in the bottom river brush. Should 
-            ${players[0].player} and ${players[1].player} finish clearing the minion wave, 
+            ${players[4].Player} clearing a ward in the bottom river brush. Should 
+            ${players[0].Player} and ${players[1].Player} finish clearing the minion wave, 
             or back off immediately?`);
           setTimeout(() => {}, 8000);
         }, 0);
@@ -507,10 +532,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         setTimeout(() => {
           setShowButtons(["Gank top lane", "Clear camps"]);
           addToTopText(
-            `After some heavy trading, both botlanes are 40% HP. ${players[0].player} is currently 
-            in the bottom river, and begins pathing towards bot lane. However, both ${players[3].player} 
-            and ${players[4].player} are missing, and haven't been spotted on any wards in quite
-            some time. Should ${players[0].player} gank bottom lane, or go back to clearing his camps?`);
+            `After some heavy trading, both botlanes are 40% HP. ${players[0].Player} is currently 
+            in the bottom river, and begins pathing towards bot lane. However, both ${players[3].Player} 
+            and ${players[4].Player} are missing, and haven't been spotted on any wards in quite
+            some time. Should ${players[0].Player} gank bottom lane, or go back to clearing his camps?`);
           setTimeout(() => {}, 8000);
         }, 0);
         startEvent();
@@ -528,6 +553,31 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   const handleDrake = (): void => {
     setEventNumber(7);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
+
+    const players: IPlayerData[] = [
+      teamPlayers[0],
+      teamPlayers[1],
+      teamPlayers[2],
+      teamPlayers[3],
+      teamPlayers[4],
+      enemyPlayers[0],
+      enemyPlayers[1],
+      enemyPlayers[2],
+      enemyPlayers[3],
+      enemyPlayers[4],
+    ];
+    setEventPlayers([
+      [players[0]],
+      [players[1]],
+      [players[2]],
+      [players[3]],
+      [players[4]],
+      [players[5]],
+      [players[6]],
+      [players[7]],
+      [players[8]],
+      [players[9]],
+    ]);
 
     if (isEnemyEvent)  {
       const startEvent = (): void => {
@@ -570,6 +620,31 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   const handleSoulDrake = (): void => {
     setEventNumber(8);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
+
+    const players: IPlayerData[] = [
+      teamPlayers[0],
+      teamPlayers[1],
+      teamPlayers[2],
+      teamPlayers[3],
+      teamPlayers[4],
+      enemyPlayers[0],
+      enemyPlayers[1],
+      enemyPlayers[2],
+      enemyPlayers[3],
+      enemyPlayers[4],
+    ];
+    setEventPlayers([
+      [players[0]],
+      [players[1]],
+      [players[2]],
+      [players[3]],
+      [players[4]],
+      [players[5]],
+      [players[6]],
+      [players[7]],
+      [players[8]],
+      [players[9]],
+    ]);
 
     if (isEnemyEvent) {
       const startEvent = (): void => {
@@ -1148,7 +1223,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     if (playerWon) {
       switch (eventNumber) {
         case 1:
-          /*you won*/
           `After gracefully dodging a skillshot ${eventPlayers[0][0].Player} engages! Although ${eventPlayers[1][0].Player} puts
           up a fight, they ultimately die, giving  ${eventPlayers[0][0].Player} the advantage.`;
           break;
@@ -1177,9 +1251,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           break;
         case 5:
           if (isEnemyEvent) {
-            `After the other team starts rift herald, your top, mid, and jungle team up to push them off, allowing you to secure the eye of the herald`;
+            `After the other team starts Rift Herald, your top, mid, and jungle team up to push them off, allowing you to secure the eye of the herald`;
           } else {
-            `You kill the rift herald, letting you gain the upper hand in gold and pressure`;
+            `You kill the Rift Herald, letting you gain the upper hand in gold and pressure`;
           }
           break;
         case 6:
