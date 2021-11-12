@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 import os
 import time
 
-def createCards(df, driver, start=0, end=166):
+def createCards(df, driver, start=0, end=165):
 
     # Webpage elements
     cardListButton = driver.find_element(By.ID, 'card_selector_btn')
@@ -100,6 +100,6 @@ if __name__ == "__main__":
         textBox.send_keys(statTitles[i])
 
     # Create cards
-    createCards(cardStats, driver, 131)
+    createCards(cardStats, driver)
     time.sleep(3)
     driver.quit()
