@@ -43,7 +43,7 @@ export default function getPlayerFromRole(req, res) {
       case "TOP":
         indices = Array.from(getFiveRandomPlayers(top.length));
         indices.forEach(idx => {
-            players.add(top[idx]);
+            players.push(top[idx]);
         });
         res.statusCode = 200;
         res.json(players);
@@ -51,7 +51,7 @@ export default function getPlayerFromRole(req, res) {
       case "JG":
         indices = Array.from(getFiveRandomPlayers(jg.length));
         indices.forEach(idx => {
-            players.add(jg[idx]);
+            players.push(jg[idx]);
         });
         res.statusCode = 200;
         res.json(players);
@@ -59,7 +59,7 @@ export default function getPlayerFromRole(req, res) {
       case "MID":
         indices = Array.from(getFiveRandomPlayers(mid.length));
         indices.forEach(idx => {
-            players.add(mid[idx]);
+            players.push(mid[idx]);
         });
         res.statusCode = 200;
         res.json(players);
@@ -67,7 +67,7 @@ export default function getPlayerFromRole(req, res) {
       case "ADC":
         indices = Array.from(getFiveRandomPlayers(adc.length));
         indices.forEach(idx => {
-            players.add(adc[idx]);
+            players.push(adc[idx]);
         });
         res.statusCode = 200;
         res.json(players);
@@ -75,7 +75,7 @@ export default function getPlayerFromRole(req, res) {
       case "SUP":
         indices = Array.from(getFiveRandomPlayers(sup.length));
         indices.forEach(idx => {
-            players.add(sup[idx]);
+            players.push(sup[idx]);
         });
         res.statusCode = 200;
         res.json(players);
