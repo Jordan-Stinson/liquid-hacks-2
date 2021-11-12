@@ -98,61 +98,31 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     }
   }
 
-  async function playerSelect2(role: string) {
-    let tPlayers: IPlayerData[] = [];
-
-    let speed = 100;
-
+  async function playerSelect2() {
     async function callbackFunction() {
-      let newPlayer: IPlayerData;
-
-      postData("/api/player", { role: role }).then((data) => {
-        newPlayer = { ...data };
-        let dupe = false;
-        if (teamPlayers[0].Player == newPlayer.Player) dupe = true;
-
-        if (!dupe && tPlayers.length < 5) tPlayers.push(newPlayer);
-        if (tPlayers.length < 1 || players.length < 1) {
-          setTimeout(callbackFunction, speed);
-        } else {
-          if (role == "TOP") {
-            const existing = [...enemyPlayers];
-            existing[0] = tPlayers[0];
-            setPlayers(existing);
-          }
-          if (role == "JG") {
-            const existing = [...enemyPlayers];
-            existing[1] = tPlayers[0];
-            setPlayers(existing);
-          }
-          if (role == "MID") {
-            const existing = [...enemyPlayers];
-            existing[2] = tPlayers[0];
-            setPlayers(existing);
-          }
-          if (role == "ADC") {
-            const existing = [...enemyPlayers];
-            existing[3] = tPlayers[0];
-            setPlayers(existing);
-          }
-          if (role == "SUP") {
-            const existing = [...enemyPlayers];
-            existing[4] = tPlayers[0];
-            setPlayers(existing);
-          }
-        }
+      const players: IPlayerData[] = [];
+      postData("/api/player", { role: "TOP" }).then((data) => {
+        players.push(data);
       });
+      postData("/api/player", { role: "JG" }).then((data) => {
+        players.push(data);
+      });
+      postData("/api/player", { role: "MID" }).then((data) => {
+        players.push(data);
+      });
+      postData("/api/player", { role: "ADC" }).then((data) => {
+        players.push(data);
+      });
+      postData("/api/player", { role: "SUP" }).then((data) => {
+        players.push(data);
+      });
+      setEnemyPlayers(players);
     }
     callbackFunction();
   }
 
   const createEnemyTeam = async () => {
-    console.log("here");
-    playerSelect2("TOP");
-    playerSelect2("JG");
-    playerSelect2("MID");
-    playerSelect2("ADC");
-    playerSelect2("SUP");
+    playerSelect2();
   };
 
   const start = (callback: (word: string) => void): void => {
@@ -404,10 +374,13 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     setEventNumber(7);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
-    if (isEnemyEvent)  {
+    if (isEnemyEvent) {
       const startEvent = (): void => {
         setTimeout(() => {
-          setShowButtons(["Force teamfight", "Back off and attempt to steal drake"]);
+          setShowButtons([
+            "Force teamfight",
+            "Back off and attempt to steal drake",
+          ]);
           addToTopText(
             `The enemy team has secured control of the river, and has begun
             burning down the Infernal Drake. Your team spots ${players[5].Player} on a ward
@@ -422,7 +395,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     } else {
       const startEvent = (): void => {
         setTimeout(() => {
-          setShowButtons(["Attempt to burst down the dragon", "Force teamfight with enemy"]);
+          setShowButtons([
+            "Attempt to burst down the dragon",
+            "Force teamfight with enemy",
+          ]);
           addToTopText(
             `Through superior macro play, you've gained control of the bottom-side river and started
             whittling down the elemental drake. ${players[5].Player} is clearing a minion wave in the top lane,
@@ -449,7 +425,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     if (isEnemyEvent) {
       const startEvent = (): void => {
         setTimeout(() => {
-          setShowButtons(["Force teamfight", "Back off and attempt to steal the soul drake"]);
+          setShowButtons([
+            "Force teamfight",
+            "Back off and attempt to steal the soul drake",
+          ]);
           addToTopText(
             `The enemy team has has begun taking down the Elemental soul Drake! 
             This could be disastrous if it falls into their hands. Will you rely on your team's
@@ -460,8 +439,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         }, 0);
       };
       startEvent();
-    }
-    else setShowButtons(["Back for items", "Go for turrets"]);
+    } else setShowButtons(["Back for items", "Go for turrets"]);
     /* if enemy team is doing it, you have choice to flash in with jungler to try and steal
     can eitehr steal, fail steal and live, or die, which is win, small loss, or big loss
     if your team is doing it, choice of whether to back for items (small point gain) or look for fights (can trigger any xvx fight)
@@ -893,26 +871,13 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   async function playerSelect(role: string) {
     let tPlayers: IPlayerData[] = [];
 
-    let speed = 500;
-
     async function callbackFunction() {
-      let newPlayer: IPlayerData;
-
-      postData("/api/player", { role: role }).then((data) => {
-        newPlayer = { ...data };
-        let dupe = false;
-        for (let i = 0; i < tPlayers.length; i++) {
-          if (tPlayers[i].Player == newPlayer.Player) dupe = true;
-        }
-        if (!dupe && tPlayers.length < 5) tPlayers.push(newPlayer);
-        if (tPlayers.length < 5 && players.length < 5) {
-          setTimeout(callbackFunction, speed);
-        } else {
-          if (players.length != 5) setPlayers(tPlayers);
-        }
+      postData("/api/fivePlayers", { role: role }).then((data) => {
+        // console.log(data, "resdata");
+        if (players.length != 5) setPlayers(data);
       });
     }
-    callbackFunction();
+    if (players.length != 5) callbackFunction();
   }
 
   const roleSelector = (): ReactElement => {
@@ -1211,46 +1176,83 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       )}.png`)
     );
     return (
-      <div>
+      <div className={classes.wrapper}>
         <div className={classes.row}>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
           <div className={classes.column}>
             {" "}
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
             <Image
               src={teamPlayerCards[3]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
           <div className={classes.column}>
-            {" "}
             <Image
               src={teamPlayerCards[4]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
+          <div className={classes.column}> </div>
+          <div className={classes.column}> </div>
+          <div className={classes.column}> </div>
         </div>
         <div className={classes.row}>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
-          <div className={classes.column}></div>
+          <div className={classes.column}>
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
+            <div style={{ width: 1, height: 1 }}> </div>
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div> </div>
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div> </div>
+          </div>
+          <div className={classes.column}>
+            <div> </div>{" "}
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div> </div>
+          </div>
+          <div className={classes.column}>
+            <div> </div>{" "}
+          </div>
+          <div className={classes.column}>
+            {" "}
+            <div> </div>
+          </div>
+          <div className={classes.column}>
+            <div> </div>
+          </div>
         </div>
         <div className={classes.row}>
           <div className={classes.column}></div>
@@ -1266,8 +1268,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             {" "}
             <Image
               src={enemyPlayerCards[4]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
@@ -1280,8 +1282,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             {" "}
             <Image
               src={teamPlayerCards[2]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
@@ -1290,15 +1292,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           <div className={classes.column}></div>
           <div className={classes.column}></div>
           <div className={classes.column}></div>
-          <div className={classes.column}>
-            {" "}
-            <Image
-              src={enemyPlayerCards[3]}
-              width={200}
-              height={300}
-              layout={"fixed"}
-            />
-          </div>
+          <div className={classes.column}> </div>
         </div>
         <div className={classes.row}>
           <div className={classes.column}></div>
@@ -1306,8 +1300,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             {" "}
             <Image
               src={teamPlayerCards[1]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
@@ -1318,15 +1312,23 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             {" "}
             <Image
               src={enemyPlayerCards[2]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
           <div className={classes.column}></div>
           <div className={classes.column}></div>
           <div className={classes.column}></div>
-          <div className={classes.column}></div>
+          <div className={classes.column}>
+            {" "}
+            <Image
+              src={enemyPlayerCards[3]}
+              width={140}
+              height={210}
+              layout={"fixed"}
+            />
+          </div>
         </div>
         <div className={classes.row}>
           <div className={classes.column}></div>
@@ -1345,8 +1347,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             {" "}
             <Image
               src={teamPlayerCards[0]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
@@ -1357,8 +1359,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             {" "}
             <Image
               src={enemyPlayerCards[1]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>
@@ -1375,8 +1377,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             {" "}
             <Image
               src={enemyPlayerCards[0]}
-              width={200}
-              height={300}
+              width={140}
+              height={210}
               layout={"fixed"}
             />
           </div>

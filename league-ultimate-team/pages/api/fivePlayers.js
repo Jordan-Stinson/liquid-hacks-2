@@ -1,15 +1,15 @@
 const mainDataset = require("../../public/data/mainDataset.json"); // Requiring a JSON file reads and parses it. Good for static files that don't change.
 
 function getFiveRandomPlayers(sizeOfArr) {
-    let visited = new Set();
-    for (let i=0; i < 5; i++) {
-        let idx = Math.floor(Math.random() * sizeOfArr);
-        while (visited.has(idx)) {
-            idx = Math.floor(Math.random() * sizeOfArr);
-        }
-        visited.add(idx);
+  let visited = new Set();
+  for (let i = 0; i < 5; i++) {
+    let idx = Math.floor(Math.random() * sizeOfArr);
+    while (visited.has(idx)) {
+      idx = Math.floor(Math.random() * sizeOfArr);
     }
-    return visited;
+    visited.add(idx);
+  }
+  return visited;
 }
 
 export default function getPlayerFromRole(req, res) {
@@ -37,45 +37,45 @@ export default function getPlayerFromRole(req, res) {
     }
   });
   let players = [];
-  let indices = [];
+  let indices;
   if (req.method === "POST") {
     switch (req.body.role) {
       case "TOP":
         indices = Array.from(getFiveRandomPlayers(top.length));
-        indices.forEach(idx => {
-            players.push(top[idx]);
+        indices.forEach((idx) => {
+          players.push(top[idx]);
         });
         res.statusCode = 200;
         res.json(players);
         break;
       case "JG":
         indices = Array.from(getFiveRandomPlayers(jg.length));
-        indices.forEach(idx => {
-            players.push(jg[idx]);
+        indices.forEach((idx) => {
+          players.push(jg[idx]);
         });
         res.statusCode = 200;
         res.json(players);
         break;
       case "MID":
         indices = Array.from(getFiveRandomPlayers(mid.length));
-        indices.forEach(idx => {
-            players.push(mid[idx]);
+        indices.forEach((idx) => {
+          players.push(mid[idx]);
         });
         res.statusCode = 200;
         res.json(players);
         break;
       case "ADC":
         indices = Array.from(getFiveRandomPlayers(adc.length));
-        indices.forEach(idx => {
-            players.push(adc[idx]);
+        indices.forEach((idx) => {
+          players.push(adc[idx]);
         });
         res.statusCode = 200;
         res.json(players);
         break;
       case "SUP":
         indices = Array.from(getFiveRandomPlayers(sup.length));
-        indices.forEach(idx => {
-            players.push(sup[idx]);
+        indices.forEach((idx) => {
+          players.push(sup[idx]);
         });
         res.statusCode = 200;
         res.json(players);
