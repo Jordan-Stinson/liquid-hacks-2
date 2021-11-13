@@ -184,8 +184,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
                 removeAllText();
                 setGameStage(1);
               }, 6500);
-            }, 1000);
-          }, 6000);
+            }, 4000);
+          }, 3000);
         }, 4000);
       }, 3000);
     }, 0);
@@ -423,9 +423,33 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handleRiftHerald = (): void => {
+    setEventNumber(5);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
 
-    setEventNumber(5);
+    const players: IPlayerData[] = [
+      teamPlayers[0],
+      teamPlayers[1],
+      teamPlayers[2],
+      teamPlayers[3],
+      teamPlayers[4],
+      enemyPlayers[0],
+      enemyPlayers[1],
+      enemyPlayers[2],
+      enemyPlayers[3],
+      enemyPlayers[4],
+    ];
+    setEventPlayers([
+      [players[0]],
+      [players[1]],
+      [players[2]],
+      [players[3]],
+      [players[4]],
+      [players[5]],
+      [players[6]],
+      [players[7]],
+      [players[8]],
+      [players[9]],
+    ]);
 
     if (isEnemyEvent) {
       const startEvent = (): void => {
@@ -1138,158 +1162,199 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handleEventEnd = (playerWon: boolean) => {
-    // console.log(eventPlayers);
-    // if (playerWon) {
-    //   switch (eventNumber) {
-    //     case 1:
-    //       /*you won*/
-    //       `After gracefully dodging a skillshot ${eventPlayers[0][0].Player} engages! Although ${eventPlayers[1][0].Player} puts
-    //       up a fight, they ultimately die, giving  ${eventPlayers[0][0].Player} the advantage.`;
-    //       break;
-    //     case 2:
-    //       /*you won*/
-    //       `Using their superb teamwork ${eventPlayers[0][0].Player} and ${eventPlayers[0][1].Player} trap ${eventPlayers[1][0].Player}! ${eventPlayers[1][1].Player} tries
-    //      to help, but is too late. Your team secures the kill and gets out alive`;
-    //       break;
-    //     case 3:
-    //       /*you won*/
-    //       `After some skirmishing,  ${
-    //         eventPlayers[0][Math.floor(Math.random() * 5)].Player
-    //       } hits a huge ultimate, decimating the other team. Then,  ${
-    //         eventPlayers[0][Math.floor(Math.random() * 5)].Player
-    //       }
-    //       cleans up the rest of the enemy team. ACE!`;
-    //       break;
-    //     case 4:
-    //       /*you won*/
-    //       if (isEnemyEvent) {
-    //         `${eventPlayers[1][1].Player} walks up behind you, but ${eventPlayers[0][0].Player} flashes out at the last second, staying alive to see another fight.`;
-    //       } else {
-    //         `${eventPlayers[0][1].Player} gets the jump on ${eventPlayers[1][0].Player}, and with the support of ${eventPlayers[0][0].Player} your team gets the shutdown on ${eventPlayers[1][0].Player}`;
-    //       }
-    //       break;
-    //     case 5:
-    //       if (isEnemyEvent) {
-    //         `After the other team starts rift herald, your top, mid, and jungle team up to push them off, allowing you to secure the eye of the herald`;
-    //       } else {
-    //         `You kill the rift herald, letting you gain the upper hand in gold and pressure`;
-    //       }
-    //       break;
-    //     case 6:
-    //       if (isEnemyEvent) {
-    //         `${eventPlayers[1][1].Player} walks up behind you, but ${eventPlayers[0][0].Player} flashes out at the last second, staying alive to see another fight.`;
-    //       } else {
-    //         `${eventPlayers[0][1].Player} gets the jump on ${eventPlayers[1][0].Player}, and with the support of ${eventPlayers[0][0].Player} your team gets the shutdown on ${eventPlayers[1][0].Player}`;
-    //       }
-    //       break;
-    //     case 7:
-    //       if (isEnemyEvent) {
-    //         `${eventPlayers[0][0].Player} steals the first drake and makes it out alive!`;
-    //       } else {
-    //         `Your team gets the first drake of the game, a huge boost to your confidence and extending your lead`;
-    //       }
-    //       break;
-    //     case 8:
-    //       if (isEnemyEvent) {
-    //         `${eventPlayers[0][0].Player} steals the soul drake and makes it out alive!`;
-    //       } else {
-    //         `Your team gets the soul drake, a huge boost to your stats and extending your lead`;
-    //       }
-    //       break;
-    //     case 9:
-    //       if (isEnemyEvent) {
-    //         `${eventPlayers[0][0].Player} steals the elder drake and makes it out alive!`;
-    //       } else {
-    //         `Your team gets the elder drake, a huge boost to your team power and extending your lead`;
-    //       }
-    //       break;
-    //     case 10:
-    //       `${eventPlayers[0][0].Player} backdoors the other team! You win!`;
-    //       break;
-    //     case 11:
-    //       if (isEnemyEvent) {
-    //         `${eventPlayers[0][0].Player} steals baron in exchange for their life!`;
-    //       } else {
-    //         `Your team slays baron. With a 3 minute Baron powerplay, your team pulls ahead in the game!`;
-    //       }
-    //       break;
-    //   }
-    // } else {
-    //   switch (eventNumber) {
-    //     case 1:
-    //       /*you won*/
-    //       `After gracefully dodging a skillshot ${eventPlayers[1][0].Player} engages! Although ${eventPlayers[0][0].Player} puts
-    //       up a fight, they ultimately die, giving  ${eventPlayers[1][0].Player} the advantage.`;
-    //       break;
-    //     case 2:
-    //       /*you won*/
-    //       `Using their superb teamwork ${eventPlayers[1][0].Player} and ${eventPlayers[1][1].Player} trap ${eventPlayers[0][0].Player}! ${eventPlayers[0][1].Player} tries
-    //      to help, but is too late. The opponent's team secures the kill and gets out alive`;
-    //       break;
-    //     case 3:
-    //       /*you won*/
-    //       `After some skirmishing,  ${
-    //         eventPlayers[1][Math.floor(Math.random() * 5)].Player
-    //       } hits a huge ultimate, decimating the other team. Then,  ${
-    //         eventPlayers[1][Math.floor(Math.random() * 5)].Player
-    //       }
-    //       cleans up the rest of your team. ACE!`;
-    //       break;
-    //     case 4:
-    //       /*you won*/
-    //       if (isEnemyEvent) {
-    //         `${eventPlayers[0][1].Player} walks up behind the opponent, but ${eventPlayers[1][0].Player} flashes out at the last second, staying alive to see another fight.`;
-    //       } else {
-    //         `${eventPlayers[1][1].Player} gets the jump on ${eventPlayers[0][0].Player}, and with the support of ${eventPlayers[1][0].Player} their team gets the shutdown on ${eventPlayers[0][0].Player}`;
-    //       }
-    //       break;
-    //     case 5:
-    //       if (isEnemyEvent) {
-    //         `After your team starts rift herald, the other team's top, mid, and jungle team up to push you off, allowing them to secure the eye of the herald`;
-    //       } else {
-    //         `The other team kill the rift herald, letting them gain the upper hand in gold and pressure`;
-    //       }
-    //       break;
-    //     case 6:
-    //       if (isEnemyEvent) {
-    //         `${eventPlayers[0][1].Player} walks up behind the opponent, but ${eventPlayers[1][0].Player} flashes out at the last second, staying alive to see another fight.`;
-    //       } else {
-    //         `${eventPlayers[1][1].Player} gets the jump on ${eventPlayers[0][0].Player}, and with the support of ${eventPlayers[1][0].Player} their team gets the shutdown on ${eventPlayers[0][0].Player}`;
-    //       }
-    //       break;
-    //     case 7:
-    //       if (isEnemyEvent) {
-    //         `${eventPlayers[1][0].Player} steals the first drake and makes it out alive!`;
-    //       } else {
-    //         `The other team team gets the first drake of the game, a huge boost to their confidence and extending their lead`;
-    //       }
-    //       break;
-    //     case 8:
-    //       if (isEnemyEvent) {
-    //         `${eventPlayers[1][0].Player} steals the soul drake and makes it out alive!`;
-    //       } else {
-    //         `The other team gets the soul drake, a huge boost to their stats and extending their lead`;
-    //       }
-    //       break;
-    //     case 9:
-    //       if (isEnemyEvent) {
-    //         `${eventPlayers[1][0].Player} steals the elder drake and makes it out alive!`;
-    //       } else {
-    //         `The other team gets the elder drake, a huge boost to their team power and extending their lead`;
-    //       }
-    //       break;
-    //     case 10:
-    //       `${eventPlayers[0][0].Player} fails to backdoor the other team. Your team falls even further behind`;
-    //       break;
-    //     case 11:
-    //       if (isEnemyEvent) {
-    //         `${eventPlayers[1][0].Player} steals baron in exchange for their life!`;
-    //       } else {
-    //         `The other team slays baron. With a 3 minute Baron powerplay, the other team pulls ahead in the game!`;
-    //       }
-    //       break;
-    //   }
-    // }
+    const startEvent = (text: string): void => {
+      setTimeout(() => {
+        addToTopText(text);
+        setTimeout(() => {}, 8000);
+      }, 1000);
+    };
+
+    console.log(eventPlayers);
+    if (playerWon) {
+      switch (eventNumber) {
+        case 1:
+          /*you won*/
+
+          startEvent(`After gracefully dodging a skillshot ${eventPlayers[0][0].Player} engages! Although ${eventPlayers[1][0].Player} puts
+          up a fight, they ultimately die, giving  ${eventPlayers[0][0].Player} the advantage.`);
+
+          break;
+        case 2:
+          /*you won*/
+
+          startEvent(`Using their superb teamwork ${eventPlayers[0][0].Player} and ${eventPlayers[0][1].Player} trap ${eventPlayers[1][0].Player}! ${eventPlayers[1][1].Player} tries
+          to help, but is too late. Your team secures the kill and gets out alive`);
+
+          break;
+        case 3:
+          /*you won*/
+          startEvent(`After some skirmishing,  ${
+            eventPlayers[0][Math.floor(Math.random() * 5)].Player
+          } hits a huge ultimate, decimating the other team. Then,  ${
+            eventPlayers[0][Math.floor(Math.random() * 5)].Player
+          }
+          cleans up the rest of the enemy team. ACE!`);
+          break;
+        case 4:
+          /*you won*/
+          if (isEnemyEvent) {
+            startEvent(
+              `${eventPlayers[1][1].Player} walks up behind you, but ${eventPlayers[0][0].Player} flashes out at the last second, staying alive to see another fight.`
+            );
+          } else {
+            startEvent(
+              `${eventPlayers[0][1].Player} gets the jump on ${eventPlayers[1][0].Player}, and with the support of ${eventPlayers[0][0].Player} your team gets the shutdown on ${eventPlayers[1][0].Player}`
+            );
+          }
+          break;
+        case 5:
+          if (isEnemyEvent) {
+            startEvent(
+              `After the other team starts rift herald, your top, mid, and jungle team up to push them off, allowing you to secure the eye of the herald`
+            );
+          } else {
+            startEvent(
+              `You kill the rift herald, letting you gain the upper hand in gold and pressure`
+            );
+          }
+          break;
+        case 6:
+          if (isEnemyEvent) {
+            startEvent(
+              `${eventPlayers[1][1].Player} walks up behind you, but ${eventPlayers[0][0].Player} flashes out at the last second, staying alive to see another fight.`
+            );
+          } else {
+            startEvent(
+              `${eventPlayers[0][1].Player} gets the jump on ${eventPlayers[1][0].Player}, and with the support of ${eventPlayers[0][0].Player} your team gets the shutdown on ${eventPlayers[1][0].Player}`
+            );
+          }
+          break;
+        case 7:
+          if (isEnemyEvent) {
+            startEvent(
+              `${eventPlayers[0][0].Player} steals the first drake and makes it out alive!`
+            );
+          } else {
+            startEvent(
+              `Your team gets the first drake of the game, a huge boost to your confidence and extending your lead`
+            );
+          }
+          break;
+        case 8:
+          if (isEnemyEvent) {
+            startEvent(
+              `${eventPlayers[0][0].Player} steals the soul drake and makes it out alive!`
+            );
+          } else {
+            startEvent(
+              `Your team gets the soul drake, a huge boost to your stats and extending your lead`
+            );
+          }
+          break;
+        case 9:
+          if (isEnemyEvent) {
+            startEvent(
+              `${eventPlayers[0][0].Player} steals the elder drake and makes it out alive!`
+            );
+          } else {
+            startEvent(
+              `Your team gets the elder drake, a huge boost to your team power and extending your lead`
+            );
+          }
+          break;
+        case 10:
+          startEvent(
+            `${eventPlayers[0][0].Player} backdoors the other team! You win!`
+          );
+          break;
+        case 11:
+          if (isEnemyEvent) {
+            startEvent(
+              `${eventPlayers[0][0].Player} steals baron in exchange for their life!`
+            );
+          } else {
+            startEvent(
+              `Your team slays baron. With a 3 minute Baron powerplay, your team pulls ahead in the game!`
+            );
+          }
+          break;
+      }
+    } else {
+      switch (eventNumber) {
+        case 1:
+          /*you won*/
+          `After gracefully dodging a skillshot ${eventPlayers[1][0].Player} engages! Although ${eventPlayers[0][0].Player} puts
+          up a fight, they ultimately die, giving  ${eventPlayers[1][0].Player} the advantage.`;
+          break;
+        case 2:
+          /*you won*/
+          `Using their superb teamwork ${eventPlayers[1][0].Player} and ${eventPlayers[1][1].Player} trap ${eventPlayers[0][0].Player}! ${eventPlayers[0][1].Player} tries
+         to help, but is too late. The opponent's team secures the kill and gets out alive`;
+          break;
+        case 3:
+          /*you won*/
+          `After some skirmishing,  ${
+            eventPlayers[1][Math.floor(Math.random() * 5)].Player
+          } hits a huge ultimate, decimating the other team. Then,  ${
+            eventPlayers[1][Math.floor(Math.random() * 5)].Player
+          }
+          cleans up the rest of your team. ACE!`;
+          break;
+        case 4:
+          /*you won*/
+          if (isEnemyEvent) {
+            `${eventPlayers[0][1].Player} walks up behind the opponent, but ${eventPlayers[1][0].Player} flashes out at the last second, staying alive to see another fight.`;
+          } else {
+            `${eventPlayers[1][1].Player} gets the jump on ${eventPlayers[0][0].Player}, and with the support of ${eventPlayers[1][0].Player} their team gets the shutdown on ${eventPlayers[0][0].Player}`;
+          }
+          break;
+        case 5:
+          if (isEnemyEvent) {
+            `After your team starts rift herald, the other team's top, mid, and jungle team up to push you off, allowing them to secure the eye of the herald`;
+          } else {
+            `The other team kill the rift herald, letting them gain the upper hand in gold and pressure`;
+          }
+          break;
+        case 6:
+          if (isEnemyEvent) {
+            `${eventPlayers[0][1].Player} walks up behind the opponent, but ${eventPlayers[1][0].Player} flashes out at the last second, staying alive to see another fight.`;
+          } else {
+            `${eventPlayers[1][1].Player} gets the jump on ${eventPlayers[0][0].Player}, and with the support of ${eventPlayers[1][0].Player} their team gets the shutdown on ${eventPlayers[0][0].Player}`;
+          }
+          break;
+        case 7:
+          if (isEnemyEvent) {
+            `${eventPlayers[1][0].Player} steals the first drake and makes it out alive!`;
+          } else {
+            `The other team team gets the first drake of the game, a huge boost to their confidence and extending their lead`;
+          }
+          break;
+        case 8:
+          if (isEnemyEvent) {
+            `${eventPlayers[1][0].Player} steals the soul drake and makes it out alive!`;
+          } else {
+            `The other team gets the soul drake, a huge boost to their stats and extending their lead`;
+          }
+          break;
+        case 9:
+          if (isEnemyEvent) {
+            `${eventPlayers[1][0].Player} steals the elder drake and makes it out alive!`;
+          } else {
+            `The other team gets the elder drake, a huge boost to their team power and extending their lead`;
+          }
+          break;
+        case 10:
+          `${eventPlayers[0][0].Player} fails to backdoor the other team. Your team falls even further behind`;
+          break;
+        case 11:
+          if (isEnemyEvent) {
+            `${eventPlayers[1][0].Player} steals baron in exchange for their life!`;
+          } else {
+            `The other team slays baron. With a 3 minute Baron powerplay, the other team pulls ahead in the game!`;
+          }
+          break;
+      }
+    }
   };
 
   useEffect(() => {
