@@ -38,7 +38,6 @@ async function postData(url = "", data = {}) {
 
 const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   const router = useRouter();
-  const [playersSelected, setPlayersSelected] = useState<boolean>(false);
   const [gameFinished, setGameFinished] = useState<boolean>(false);
   const [roleSelect, setRoleSelect] = useState<number>(0);
   const [teamPlayers, addTeamPlayers] = useState<IPlayerData[]>([]);
@@ -52,24 +51,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   const [eventNumber, setEventNumber] = useState<number>(-1);
   const [isEnemyEvent, setIsEnemyEvent] = useState<boolean>(false);
   const [players, setPlayers] = useState<IPlayerData[]>([]);
-
-  useEffect(() => {
-    const background = document.querySelector(
-      "div[data-roles]"
-    ) as unknown as HTMLDivElement;
-    if (playersSelected) {
-      background.style.background = `linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0))`;
-    }
-  }, [playersSelected]);
-
-  useEffect(() => {
-    const background = document.querySelector(
-      "div[data-rift]"
-    ) as unknown as HTMLDivElement;
-    if (gameFinished) {
-      background.style.background = `linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0))`;
-    }
-  }, [gameFinished]);
 
   async function addToTopText(text: string) {
     let i = 0;
@@ -92,11 +73,18 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     ) as unknown as HTMLDivElement;
 
     let speed = 10;
-    if (words.innerHTML.length) {
+    if (words && words.innerHTML.length) {
       words.innerHTML = words.innerHTML.slice(0, -1);
       setTimeout(removeTopText, speed);
     }
   }
+
+  const removeAllText = () => {
+    const words = document.querySelector(
+      "div[data-top-text]"
+    ) as unknown as HTMLDivElement;
+    words.innerHTML = "";
+  };
 
   async function playerSelect2() {
     async function callbackFunction() {
@@ -186,24 +174,24 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       setTimeout(() => {
         customMask1(0);
         setTimeout(() => {
-          addToTopText(`The A.I. is currently choosing their team.`);
+          createEnemyTeam();
+
           setTimeout(() => {
-            createEnemyTeam();
+            addToTopText(`The A.I. is currently choosing their team.`);
             setTimeout(() => {
               addToTopText(` The game will now start. Best of luck!`);
               setTimeout(() => {
-                removeTopText();
+                removeAllText();
                 setGameStage(1);
               }, 6500);
-            }, 6000);
-          }, 1000);
+            }, 1000);
+          }, 6000);
         }, 4000);
-      }, 8000);
+      }, 3000);
     }, 0);
   };
 
   const handle1v1 = (stage: number): void => {
-    console.log("in 1v1");
     setEventNumber(1);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
     const roleTo1v1 = Math.floor(Math.random() * 5);
@@ -226,7 +214,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             players[1].Player
           } starts to engage. Do you back off, or stand your ground?`);
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
       };
       startEvent();
     } else {
@@ -242,7 +230,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             players[0].Player
           } starts to engage. Do you continue engaging?`);
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
       };
       startEvent();
     }
@@ -252,8 +240,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handle2v2 = (stage: number): void => {
-    console.log("in 2v2");
-
     setEventNumber(2);
     const rolesTo2v2 = [
       Math.floor(Math.random() * 2),
@@ -290,7 +276,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             or try and go for the outplay?`
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
       };
       startEvent();
     } else {
@@ -311,7 +297,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             go all in to try and secure these kills?`
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
       };
       startEvent();
     }
@@ -355,7 +341,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             mid lane tower, or engage on the enemy team before they can engage on you?`
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
         startEvent();
       };
     } else {
@@ -372,7 +358,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             to be available?`
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
         startEvent();
       };
     }
@@ -409,7 +395,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             clearing the minion wave, or back off immediately?`
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
         startEvent();
       };
     } else {
@@ -424,7 +410,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             ${players[1].Player} gank top lane, or go back to clearing his camps?`
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
         startEvent();
       };
     }
@@ -454,7 +440,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             Will you risk handing this over to them, or face them head-on in the topside river?`
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
       };
       startEvent();
     } else {
@@ -472,7 +458,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             `
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
       };
       startEvent();
       /* top+mid of either team goes to fight it
@@ -513,7 +499,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
               or back off immediately?`
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
         startEvent();
       };
     } else {
@@ -527,7 +513,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
               some time. Should ${players[0].Player} gank bottom lane, or go back to clearing his camps?`
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
         startEvent();
       };
     }
@@ -543,7 +529,22 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   const handleDrake = (): void => {
     setEventNumber(7);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
-
+    const players: IPlayerData[] = [
+      teamPlayers[0],
+      teamPlayers[1],
+      teamPlayers[2],
+      teamPlayers[3],
+      teamPlayers[4],
+      enemyPlayers[0],
+      enemyPlayers[1],
+      enemyPlayers[2],
+      enemyPlayers[3],
+      enemyPlayers[4],
+    ];
+    setEventPlayers([
+      [players[0], players[1], players[2], players[3], players[4]],
+      [players[5], players[6], players[7], players[8], players[9]],
+    ]);
     if (isEnemyEvent) {
       const startEvent = (): void => {
         setTimeout(() => {
@@ -559,7 +560,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             to attempt a Smite steal while trying to deal with the incoming flank?`
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
       };
       startEvent();
     } else {
@@ -579,7 +580,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             `
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
       };
       startEvent();
     }
@@ -591,7 +592,22 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   const handleSoulDrake = (): void => {
     setEventNumber(8);
     setIsEnemyEvent(!!Math.floor(Math.random() * 2));
-
+    const players: IPlayerData[] = [
+      teamPlayers[0],
+      teamPlayers[1],
+      teamPlayers[2],
+      teamPlayers[3],
+      teamPlayers[4],
+      enemyPlayers[0],
+      enemyPlayers[1],
+      enemyPlayers[2],
+      enemyPlayers[3],
+      enemyPlayers[4],
+    ];
+    setEventPlayers([
+      [players[0], players[1], players[2], players[3], players[4]],
+      [players[5], players[6], players[7], players[8], players[9]],
+    ]);
     if (isEnemyEvent) {
       const startEvent = (): void => {
         setTimeout(() => {
@@ -606,7 +622,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             by attempting a Smite steal?`
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
       };
       startEvent();
     } else {
@@ -619,12 +635,12 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           addToTopText(
             `You find yourselves with control over the bottom river as the Elemental soul dragon spawns!
             However, you know that the enemy team will not give this one up. Your suspicions are confirmed as
-            ${players[6].Player} is spotted preparing for a flash-smite steal. The rest of the enemy team show up behind
+            ${eventPlayers[1][1].Player} is spotted preparing for a flash-smite steal. The rest of the enemy team show up behind
             them baring fangs. What will you do here? This decision could turn the game on its head!
             `
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
       };
       startEvent();
     }
@@ -667,7 +683,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             to attempt a Smite steal?`
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
       };
       startEvent();
     } else {
@@ -676,16 +692,16 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           setShowButtons(["Finish the Elder", "Look for a fight"]);
           addToTopText(
             `You've secured vision in the enemy jungle, and cleared all enemy wards 
-            within the bottom river and Dragon pit. After spotting ${players[8].Player}
+            within the bottom river and Dragon pit. After spotting ${eventPlayers[1][3].Player}
             clearing minion waves in the top lane, you decide to start hitting the Elder 
-            Dragon. You burn it down to 2500 HP when you spot ${players[6].Player} waiting
+            Dragon. You burn it down to 2500 HP when you spot ${eventPlayers[1][1].Player} waiting
             over the wall, posturing for a Smite steal. Do you finish off the Elder Dragon, 
-            confident in ${players[1].Player}'s Smiting abilities? Or do you play it slow
+            confident in ${eventPlayers[0][1].Player}'s Smiting abilities? Or do you play it slow
             and look for a teamfight instead?
             `
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
       };
       startEvent();
     }
@@ -694,29 +710,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     if your team is doing it, choice of whether to go destroy the enemy's turrets or look for fights (can trigger any xvx fight)
     */
   };
-
-  useEffect(() => {
-    const newEnemyPlayers = [];
-    for (let i = 0; i < enemyPlayers.length; i++) {
-      switch (enemyPlayers[i].Position) {
-        case "TOP":
-          newEnemyPlayers[0] = enemyPlayers[i];
-          break;
-        case "JG":
-          newEnemyPlayers[1] = enemyPlayers[i];
-          break;
-        case "MID":
-          newEnemyPlayers[2] = enemyPlayers[i];
-          break;
-        case "ADC":
-          newEnemyPlayers[3] = enemyPlayers[i];
-          break;
-        case "SUP":
-          newEnemyPlayers[4] = enemyPlayers[i];
-          break;
-      }
-    }
-  }, [enemyPlayers]);
 
   const handleBackdoor = (): void => {
     setEventNumber(10);
@@ -740,7 +733,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           or go for the backdoor win?`
         );
         setTimeout(() => {}, 8000);
-      }, 0);
+      }, 2000);
     };
     startEvent();
 
@@ -781,7 +774,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             or play it safe and shove out mid lane instead?`
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
       };
       startEvent();
     } else {
@@ -796,7 +789,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
             the enemy team and force a 5v4?`
           );
           setTimeout(() => {}, 8000);
-        }, 0);
+        }, 2000);
       };
       startEvent();
     }
@@ -835,7 +828,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     }
     if (stage == 3) {
       while (events.length) {
-        console.log(events[0], event);
         if (events[0] == 1) {
           events.pop();
           handle2v2(stage);
@@ -893,7 +885,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
           handleBackdoor();
         }
       }
-      handleEndofGame();
     }
   };
 
@@ -928,6 +919,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         const teamPlayerCards = document.querySelectorAll(
           "div[data-player-card]"
         );
+        const oldBackground2 = document.querySelector(
+          "div[data-roles]"
+        ) as unknown as HTMLDivElement;
+        oldBackground2.style.background = `linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0))`;
         //move player cards
         setGameFinished(true);
 
@@ -942,8 +937,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       if (Math.round((opacity + Number.EPSILON) * 100) / 100 != 0) {
         background.style.background = `linear-gradient(rgba(0, 0, 0, ${
           opacity - 0.05
-        }), rgba(0, 0, 0, ${opacity + 0.05}))`;
-        setTimeout(() => customMaskOut(opacity + 0.05), 50);
+        }), rgba(0, 0, 0, ${opacity - 0.05}))`;
+        setTimeout(() => customMaskOut(opacity - 0.05), 50);
       } else {
         /*text about game being won*/
       }
@@ -968,6 +963,10 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         const teamPlayerCards = document.querySelectorAll(
           "div[data-player-card]"
         );
+        const oldBackground2 = document.querySelector(
+          "div[data-roles]"
+        ) as unknown as HTMLDivElement;
+        oldBackground2.style.background = `linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0))`;
         //move player cards
         setGameFinished(true);
         setTimeout(() => customMaskOut(1), 1000);
@@ -981,8 +980,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       if (Math.round((opacity + Number.EPSILON) * 100) / 100 != 0) {
         background.style.background = `linear-gradient(rgba(0, 0, 0, ${
           opacity - 0.05
-        }), rgba(0, 0, 0, ${opacity + 0.05}))`;
-        setTimeout(() => customMaskOut(opacity + 0.05), 50);
+        }), rgba(0, 0, 0, ${opacity - 0.05}))`;
+        setTimeout(() => customMaskOut(opacity - 0.05), 50);
       } else {
         /* add text about loss*/
       }
@@ -993,7 +992,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   useEffect(() => {
     console.log(gameStage, "starting gmae stage");
     if (gameStage == 1) {
-      const numOfEvents = Math.floor(Math.random() * (3 - 0) + 0);
+      const numOfEvents = 1;
       let events = [];
       while (events.length != numOfEvents) {
         events.push(Math.floor(Math.random() * r1po.length + 1));
@@ -1001,33 +1000,40 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       if (events.length) handleEvents(1, events);
       else setGameStage(gameStage + 1);
     } else if (gameStage == 2) {
-      const numOfEvents = Math.floor(Math.random() * (3 - 1) + 1);
+      const numOfEvents = 1;
       let events = [];
       while (events.length != numOfEvents) {
         events.push(Math.floor(Math.random() * r2po.length + 1));
       }
       handleEvents(2, events);
     } else if (gameStage == 3) {
-      const numOfEvents = Math.floor(Math.random() * (4 - 1) + 1);
+      const numOfEvents = 1;
       let events = [];
       while (events.length != numOfEvents) {
         events.push(Math.floor(Math.random() * r3po.length + 1));
       }
       handleEvents(3, events);
+      //setGameStage(gameStage + 1);
     } else if (gameStage == 4) {
-      const numOfEvents = Math.floor(Math.random() * (4 - 2) + 2);
+      const numOfEvents = 1;
       let events = [];
       while (events.length != numOfEvents) {
         events.push(Math.floor(Math.random() * r4po.length + 1));
       }
       handleEvents(4, events);
     } else if (gameStage == 5) {
-      const numOfEvents = 3;
+      const numOfEvents = 1;
       let events = [];
       while (events.length != numOfEvents) {
         events.push(Math.floor(Math.random() * r5po.length + 1));
       }
       handleEvents(5, events);
+      //  setGameStage(gameStage + 1);
+    } else if (gameStage > 5) {
+      handleEndofGame();
+      setShowButtons([]);
+      addTeamPlayers([]);
+      setEnemyPlayers([]);
     }
   }, [gameStage]);
 
@@ -1132,168 +1138,163 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
   };
 
   const handleEventEnd = (playerWon: boolean) => {
-    console.log(eventPlayers);
-    if (playerWon) {
-      switch (eventNumber) {
-        case 1:
-          /*you won*/
-          `After gracefully dodging a skillshot ${eventPlayers[0][0].Player} engages! Although ${eventPlayers[1][0].Player} puts
-          up a fight, they ultimately die, giving  ${eventPlayers[0][0].Player} the advantage.`;
-          break;
-        case 2:
-          /*you won*/
-          `Using their superb teamwork ${eventPlayers[0][0].Player} and ${eventPlayers[0][1].Player} trap ${eventPlayers[1][0].Player}! ${eventPlayers[1][1].Player} tries
-         to help, but is too late. Your team secures the kill and gets out alive`;
-          break;
-        case 3:
-          /*you won*/
-          `After some skirmishing,  ${
-            eventPlayers[0][Math.floor(Math.random() * 5)].Player
-          } hits a huge ultimate, decimating the other team. Then,  ${
-            eventPlayers[0][Math.floor(Math.random() * 5)].Player
-          } 
-          cleans up the rest of the enemy team. ACE!`;
-          break;
-        case 4:
-          /*you won*/
-          if (isEnemyEvent) {
-            `${eventPlayers[1][1].Player} walks up behind you, but ${eventPlayers[0][0].Player} flashes out at the last second, staying alive to see another fight.`;
-          } else {
-            `${eventPlayers[0][1].Player} gets the jump on ${eventPlayers[1][0].Player}, and with the support of ${eventPlayers[0][0].Player} your team gets the shutdown on ${eventPlayers[1][0].Player}`;
-          }
-
-          break;
-        case 5:
-          if (isEnemyEvent) {
-            `After the other team starts rift herald, your top, mid, and jungle team up to push them off, allowing you to secure the eye of the herald`;
-          } else {
-            `You kill the rift herald, letting you gain the upper hand in gold and pressure`;
-          }
-          break;
-        case 6:
-          if (isEnemyEvent) {
-            `${eventPlayers[1][1].Player} walks up behind you, but ${eventPlayers[0][0].Player} flashes out at the last second, staying alive to see another fight.`;
-          } else {
-            `${eventPlayers[0][1].Player} gets the jump on ${eventPlayers[1][0].Player}, and with the support of ${eventPlayers[0][0].Player} your team gets the shutdown on ${eventPlayers[1][0].Player}`;
-          }
-          break;
-        case 7:
-          if (isEnemyEvent) {
-            `${eventPlayers[0][0].Player} steals the first drake and makes it out alive!`;
-          } else {
-            `Your team gets the first drake of the game, a huge boost to your confidence and extending your lead`;
-          }
-          break;
-        case 8:
-          if (isEnemyEvent) {
-            `${eventPlayers[0][0].Player} steals the soul drake and makes it out alive!`;
-          } else {
-            `Your team gets the soul drake, a huge boost to your stats and extending your lead`;
-          }
-          break;
-        case 9:
-          if (isEnemyEvent) {
-            `${eventPlayers[0][0].Player} steals the elder drake and makes it out alive!`;
-          } else {
-            `Your team gets the elder drake, a huge boost to your team power and extending your lead`;
-          }
-          break;
-        case 10:
-          `${eventPlayers[0][0].Player} backdoors the other team! You win!`;
-
-          break;
-        case 11:
-          if (isEnemyEvent) {
-            `${eventPlayers[0][0].Player} steals baron in exchange for their life!`;
-          } else {
-            `Your team slays baron. With a 3 minute Baron powerplay, your team pulls ahead in the game!`;
-          }
-          break;
-      }
-    } else {
-      switch (eventNumber) {
-        case 1:
-          /*you won*/
-          `After gracefully dodging a skillshot ${eventPlayers[1][0].Player} engages! Although ${eventPlayers[0][0].Player} puts
-          up a fight, they ultimately die, giving  ${eventPlayers[1][0].Player} the advantage.`;
-          break;
-        case 2:
-          /*you won*/
-          `Using their superb teamwork ${eventPlayers[1][0].Player} and ${eventPlayers[1][1].Player} trap ${eventPlayers[0][0].Player}! ${eventPlayers[0][1].Player} tries
-         to help, but is too late. The opponent's team secures the kill and gets out alive`;
-          break;
-        case 3:
-          /*you won*/
-          `After some skirmishing,  ${
-            eventPlayers[1][Math.floor(Math.random() * 5)].Player
-          } hits a huge ultimate, decimating the other team. Then,  ${
-            eventPlayers[1][Math.floor(Math.random() * 5)].Player
-          } 
-          cleans up the rest of your team. ACE!`;
-          break;
-        case 4:
-          /*you won*/
-          if (isEnemyEvent) {
-            `${eventPlayers[0][1].Player} walks up behind the opponent, but ${eventPlayers[1][0].Player} flashes out at the last second, staying alive to see another fight.`;
-          } else {
-            `${eventPlayers[1][1].Player} gets the jump on ${eventPlayers[0][0].Player}, and with the support of ${eventPlayers[1][0].Player} their team gets the shutdown on ${eventPlayers[0][0].Player}`;
-          }
-
-          break;
-        case 5:
-          if (isEnemyEvent) {
-            `After your team starts rift herald, the other team's top, mid, and jungle team up to push you off, allowing them to secure the eye of the herald`;
-          } else {
-            `The other team kill the rift herald, letting them gain the upper hand in gold and pressure`;
-          }
-          break;
-        case 6:
-          if (isEnemyEvent) {
-            `${eventPlayers[0][1].Player} walks up behind the opponent, but ${eventPlayers[1][0].Player} flashes out at the last second, staying alive to see another fight.`;
-          } else {
-            `${eventPlayers[1][1].Player} gets the jump on ${eventPlayers[0][0].Player}, and with the support of ${eventPlayers[1][0].Player} their team gets the shutdown on ${eventPlayers[0][0].Player}`;
-          }
-          break;
-        case 7:
-          if (isEnemyEvent) {
-            `${eventPlayers[1][0].Player} steals the first drake and makes it out alive!`;
-          } else {
-            `The other team team gets the first drake of the game, a huge boost to their confidence and extending their lead`;
-          }
-          break;
-        case 8:
-          if (isEnemyEvent) {
-            `${eventPlayers[1][0].Player} steals the soul drake and makes it out alive!`;
-          } else {
-            `The other team gets the soul drake, a huge boost to their stats and extending their lead`;
-          }
-          break;
-        case 9:
-          if (isEnemyEvent) {
-            `${eventPlayers[1][0].Player} steals the elder drake and makes it out alive!`;
-          } else {
-            `The other team gets the elder drake, a huge boost to their team power and extending their lead`;
-          }
-          break;
-        case 10:
-          `${eventPlayers[0][0].Player} fails to backdoor the other team. Your team falls even further behind`;
-
-          break;
-        case 11:
-          if (isEnemyEvent) {
-            `${eventPlayers[1][0].Player} steals baron in exchange for their life!`;
-          } else {
-            `The other team slays baron. With a 3 minute Baron powerplay, the other team pulls ahead in the game!`;
-          }
-          break;
-      }
-    }
+    // console.log(eventPlayers);
+    // if (playerWon) {
+    //   switch (eventNumber) {
+    //     case 1:
+    //       /*you won*/
+    //       `After gracefully dodging a skillshot ${eventPlayers[0][0].Player} engages! Although ${eventPlayers[1][0].Player} puts
+    //       up a fight, they ultimately die, giving  ${eventPlayers[0][0].Player} the advantage.`;
+    //       break;
+    //     case 2:
+    //       /*you won*/
+    //       `Using their superb teamwork ${eventPlayers[0][0].Player} and ${eventPlayers[0][1].Player} trap ${eventPlayers[1][0].Player}! ${eventPlayers[1][1].Player} tries
+    //      to help, but is too late. Your team secures the kill and gets out alive`;
+    //       break;
+    //     case 3:
+    //       /*you won*/
+    //       `After some skirmishing,  ${
+    //         eventPlayers[0][Math.floor(Math.random() * 5)].Player
+    //       } hits a huge ultimate, decimating the other team. Then,  ${
+    //         eventPlayers[0][Math.floor(Math.random() * 5)].Player
+    //       }
+    //       cleans up the rest of the enemy team. ACE!`;
+    //       break;
+    //     case 4:
+    //       /*you won*/
+    //       if (isEnemyEvent) {
+    //         `${eventPlayers[1][1].Player} walks up behind you, but ${eventPlayers[0][0].Player} flashes out at the last second, staying alive to see another fight.`;
+    //       } else {
+    //         `${eventPlayers[0][1].Player} gets the jump on ${eventPlayers[1][0].Player}, and with the support of ${eventPlayers[0][0].Player} your team gets the shutdown on ${eventPlayers[1][0].Player}`;
+    //       }
+    //       break;
+    //     case 5:
+    //       if (isEnemyEvent) {
+    //         `After the other team starts rift herald, your top, mid, and jungle team up to push them off, allowing you to secure the eye of the herald`;
+    //       } else {
+    //         `You kill the rift herald, letting you gain the upper hand in gold and pressure`;
+    //       }
+    //       break;
+    //     case 6:
+    //       if (isEnemyEvent) {
+    //         `${eventPlayers[1][1].Player} walks up behind you, but ${eventPlayers[0][0].Player} flashes out at the last second, staying alive to see another fight.`;
+    //       } else {
+    //         `${eventPlayers[0][1].Player} gets the jump on ${eventPlayers[1][0].Player}, and with the support of ${eventPlayers[0][0].Player} your team gets the shutdown on ${eventPlayers[1][0].Player}`;
+    //       }
+    //       break;
+    //     case 7:
+    //       if (isEnemyEvent) {
+    //         `${eventPlayers[0][0].Player} steals the first drake and makes it out alive!`;
+    //       } else {
+    //         `Your team gets the first drake of the game, a huge boost to your confidence and extending your lead`;
+    //       }
+    //       break;
+    //     case 8:
+    //       if (isEnemyEvent) {
+    //         `${eventPlayers[0][0].Player} steals the soul drake and makes it out alive!`;
+    //       } else {
+    //         `Your team gets the soul drake, a huge boost to your stats and extending your lead`;
+    //       }
+    //       break;
+    //     case 9:
+    //       if (isEnemyEvent) {
+    //         `${eventPlayers[0][0].Player} steals the elder drake and makes it out alive!`;
+    //       } else {
+    //         `Your team gets the elder drake, a huge boost to your team power and extending your lead`;
+    //       }
+    //       break;
+    //     case 10:
+    //       `${eventPlayers[0][0].Player} backdoors the other team! You win!`;
+    //       break;
+    //     case 11:
+    //       if (isEnemyEvent) {
+    //         `${eventPlayers[0][0].Player} steals baron in exchange for their life!`;
+    //       } else {
+    //         `Your team slays baron. With a 3 minute Baron powerplay, your team pulls ahead in the game!`;
+    //       }
+    //       break;
+    //   }
+    // } else {
+    //   switch (eventNumber) {
+    //     case 1:
+    //       /*you won*/
+    //       `After gracefully dodging a skillshot ${eventPlayers[1][0].Player} engages! Although ${eventPlayers[0][0].Player} puts
+    //       up a fight, they ultimately die, giving  ${eventPlayers[1][0].Player} the advantage.`;
+    //       break;
+    //     case 2:
+    //       /*you won*/
+    //       `Using their superb teamwork ${eventPlayers[1][0].Player} and ${eventPlayers[1][1].Player} trap ${eventPlayers[0][0].Player}! ${eventPlayers[0][1].Player} tries
+    //      to help, but is too late. The opponent's team secures the kill and gets out alive`;
+    //       break;
+    //     case 3:
+    //       /*you won*/
+    //       `After some skirmishing,  ${
+    //         eventPlayers[1][Math.floor(Math.random() * 5)].Player
+    //       } hits a huge ultimate, decimating the other team. Then,  ${
+    //         eventPlayers[1][Math.floor(Math.random() * 5)].Player
+    //       }
+    //       cleans up the rest of your team. ACE!`;
+    //       break;
+    //     case 4:
+    //       /*you won*/
+    //       if (isEnemyEvent) {
+    //         `${eventPlayers[0][1].Player} walks up behind the opponent, but ${eventPlayers[1][0].Player} flashes out at the last second, staying alive to see another fight.`;
+    //       } else {
+    //         `${eventPlayers[1][1].Player} gets the jump on ${eventPlayers[0][0].Player}, and with the support of ${eventPlayers[1][0].Player} their team gets the shutdown on ${eventPlayers[0][0].Player}`;
+    //       }
+    //       break;
+    //     case 5:
+    //       if (isEnemyEvent) {
+    //         `After your team starts rift herald, the other team's top, mid, and jungle team up to push you off, allowing them to secure the eye of the herald`;
+    //       } else {
+    //         `The other team kill the rift herald, letting them gain the upper hand in gold and pressure`;
+    //       }
+    //       break;
+    //     case 6:
+    //       if (isEnemyEvent) {
+    //         `${eventPlayers[0][1].Player} walks up behind the opponent, but ${eventPlayers[1][0].Player} flashes out at the last second, staying alive to see another fight.`;
+    //       } else {
+    //         `${eventPlayers[1][1].Player} gets the jump on ${eventPlayers[0][0].Player}, and with the support of ${eventPlayers[1][0].Player} their team gets the shutdown on ${eventPlayers[0][0].Player}`;
+    //       }
+    //       break;
+    //     case 7:
+    //       if (isEnemyEvent) {
+    //         `${eventPlayers[1][0].Player} steals the first drake and makes it out alive!`;
+    //       } else {
+    //         `The other team team gets the first drake of the game, a huge boost to their confidence and extending their lead`;
+    //       }
+    //       break;
+    //     case 8:
+    //       if (isEnemyEvent) {
+    //         `${eventPlayers[1][0].Player} steals the soul drake and makes it out alive!`;
+    //       } else {
+    //         `The other team gets the soul drake, a huge boost to their stats and extending their lead`;
+    //       }
+    //       break;
+    //     case 9:
+    //       if (isEnemyEvent) {
+    //         `${eventPlayers[1][0].Player} steals the elder drake and makes it out alive!`;
+    //       } else {
+    //         `The other team gets the elder drake, a huge boost to their team power and extending their lead`;
+    //       }
+    //       break;
+    //     case 10:
+    //       `${eventPlayers[0][0].Player} fails to backdoor the other team. Your team falls even further behind`;
+    //       break;
+    //     case 11:
+    //       if (isEnemyEvent) {
+    //         `${eventPlayers[1][0].Player} steals baron in exchange for their life!`;
+    //       } else {
+    //         `The other team slays baron. With a 3 minute Baron powerplay, the other team pulls ahead in the game!`;
+    //       }
+    //       break;
+    //   }
+    // }
   };
 
   useEffect(() => {
     if (gameChoice == -1) return;
     if (gameChoice == 5) {
-      setGameStage(gameStage + 1);
       midRisk();
     }
     if (gameChoice == 0) {
@@ -1303,8 +1304,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         eventNumber == 6 ||
         eventNumber == 10
       ) {
-        setGameStage(gameStage + 1);
-
         return;
       } else if (
         eventNumber == 3 ||
@@ -1313,8 +1312,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         eventNumber == 9 ||
         eventNumber == 11
       ) {
-        setGameStage(gameStage + 1);
-
         smallRisk();
       }
     }
@@ -1327,12 +1324,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         eventNumber == 7 ||
         eventNumber == 8
       ) {
-        setGameStage(gameStage + 1);
-
         midRisk();
       } else {
-        setGameStage(gameStage + 1);
-
         bigRisk();
       }
     }
@@ -1577,7 +1570,6 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       startGame((text) => console.log(text));
     }
   }, [roleSelect]);
-  console.log(showButtons, showButtons.length);
   return (
     <div className={classes.container} data-win>
       <div className={classes.container2} data-loss>
@@ -1597,7 +1589,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
                       <button
                         onClick={() => {
                           setGameChoice(index);
-                          setShowButtons([]);
+                          setGameStage(gameStage + 1);
+                          removeAllText();
                         }}
                         className={classes.buttonop}
                       >
@@ -1613,11 +1606,16 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
                 <div className={classes.playersOnRift}>{grid()}</div>
               )}
               {gameFinished && (
-                <button onClick={() => router.push("/")}>
-                  <div>
-                    <span>Home Page</span>
-                  </div>
-                </button>
+                <div>
+                  <button
+                    onClick={() => router.push("/")}
+                    className={classes.endbutton}
+                  >
+                    <div>
+                      <span>Home Page</span>
+                    </div>
+                  </button>
+                </div>
               )}
             </div>
           </div>

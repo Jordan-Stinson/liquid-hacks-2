@@ -64,14 +64,15 @@
             background-color: rgba(0, 0, 0, 0.5);
           }
           .roleSelect {
-            padding-top: 300px;
+            padding-top: 625px;
+            padding-left: 150px;
             width: 100%;
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
             .fivePlayerContainer {
               width: 100%;
               display: flex;
-              justify-content: space-around;
+              justify-content: space-between;
             }
             .playerCard {
               padding: 0;
@@ -92,6 +93,14 @@
                 height: 102px;
               }
             }
+          }
+          .endbutton {
+            position: fixed;
+            bottom: 10vh;
+            left: 48vw;
+            background-color: black;
+            color: gold;
+            font-size: xx-large;
           }
           .buttonOptions {
             z-index: 1;
