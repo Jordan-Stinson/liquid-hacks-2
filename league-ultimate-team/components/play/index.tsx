@@ -455,7 +455,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       const startEvent = (): void => {
         setTimeout(() => {
           setShowButtons([
-            "Bring up your team and look for a fight",
+            "Look for a fight",
             "Back off and leave your players to farm",
           ]);
           addToTopText(
@@ -471,8 +471,8 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
       const startEvent = (): void => {
         setTimeout(() => {
           setShowButtons([
-            "Defend your position and prepare for a teamfight",
-            "Leave your jungler to take the objective and farm instead.",
+            "Defend your position",
+            "Leave your jungler to take the objective",
           ]);
           addToTopText(
             `The Rift Herald is an important early and mid game objective. Your team recognizes this, and through temporary
@@ -1132,7 +1132,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     } else {
       setEnemyPoints(enemyPoints + gameStage);
     }
-    handleEventEnd(playerIsWinner);
+    // handleEventEnd(playerIsWinner);
   };
 
   const midRisk = () => {
@@ -1145,7 +1145,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     } else {
       setEnemyPoints(enemyPoints + 2 * gameStage);
     }
-    handleEventEnd(playerIsWinner);
+    //handleEventEnd(playerIsWinner);
   };
 
   const bigRisk = () => {
@@ -1158,7 +1158,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
     } else {
       setEnemyPoints(enemyPoints + 3 * gameStage);
     }
-    handleEventEnd(playerIsWinner);
+    // handleEventEnd(playerIsWinner);
   };
 
   const handleEventEnd = (playerWon: boolean) => {
@@ -1641,7 +1641,9 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
         <div className={classes.container3} data-rift>
           <div className={classes.container4} data-roles>
             <div className={classes.mask} data-mask>
-              <div className={classes.topText} data-top-text></div>
+              <div className={classes.textWrapper}>
+                <div className={classes.topText} data-top-text></div>
+              </div>
 
               {roleSelect != 6 && (
                 <div className={classes.roleSelect}>{roleSelector()}</div>
