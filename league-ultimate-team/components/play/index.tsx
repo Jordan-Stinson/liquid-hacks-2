@@ -54,7 +54,7 @@ const PlayComponent: FC<PickProps> = ({}): ReactElement => {
 
   async function addToTopText(text: string) {
     let i = 0;
-    let speed = 40;
+    let speed = 20;
     const words = document.querySelector(
       "div[data-top-text]"
     ) as unknown as HTMLDivElement;
