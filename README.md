@@ -1,5 +1,7 @@
 # League of Legends: Ultimate Team
 
+![image](/league-ultimate-team/public/images/devpostThumbnail.png)
+
 ## Inspiration
 Watching Worlds 2021 together reignited our passion for League of Legends e-sports, but between work and school, we don't have much time to watch every game and stay up to date. We wanted to create an e-sports game that both casual watchers and hardcore fans could enjoy.
 
